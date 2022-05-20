@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+
+    <EditText
+
+        android:id="@+id/et_email"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginTop="300dp"
+        android:background="@drawable/rectangle"
+        android:ems="10"
+        android:hint="email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+        android:id="@+id/et_pwd"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rectangle"
+        android:ems="10"
+        android:hint="password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="209dp"
+        android:layout_height="38dp"
+        android:layout_margin="5dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#60757F"
+        android:text="로그인"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_pwd" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_login">
+
+        <Button
+            android:id="@+id/btn_lostpwd"
+            android:layout_width="101dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/white"
+            android:text="비밀번호찾기"
+            android:textColor="#707070"
+            android:textSize="10dp" />
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="101dp"
+            android:layout_height="35dp"
+            android:layout_margin="8dp"
+            android:layout_marginTop="4dp"
+            android:backgroundTint="@color/white"
+            android:text="회원가입"
+            android:textColor="#707070"
+            android:textSize="10dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/idlogin_text"
+        android:layout_width="100dp"
+        android:layout_height="26dp"
+        android:layout_marginEnd="111dp"
+        android:gravity="left"
+        android:text="아이디 로그인"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/et_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

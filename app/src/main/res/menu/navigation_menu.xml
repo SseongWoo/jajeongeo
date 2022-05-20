@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_navhome"
+        android:title="홈" />
+
+    <item android:title="메인화면">
+        <menu>
+
+            <item
+                android:id="@+id/nav_community"
+                android:icon="@drawable/ic_navcommunity"
+                android:title="커뮤니티"/>
+
+            <item
+                android:id="@+id/nav_marketplace"
+                android:icon="@drawable/ic_navshop"
+                android:title="중고장터" />
+            <item
+                android:id="@+id/nav_chatroome"
+                android:icon="@drawable/chat"
+                android:title="채팅" />
+
+        </menu>
+    </item>
+
+    <item android:title="설정">
+
+        <menu>
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_navsetting"
+                android:title="설정" />
+        </menu>
+
+    </item>
+
+
+</menu>

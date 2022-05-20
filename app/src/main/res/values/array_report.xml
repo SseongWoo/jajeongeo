@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_report">
+        <item>욕설</item>
+        <item>사기</item>
+        <item>음란성/선정성</item>
+        <item>영리목적</item>
+        <item>도배</item>
+        <item>기타</item>
+    </string-array>
+</resources>
