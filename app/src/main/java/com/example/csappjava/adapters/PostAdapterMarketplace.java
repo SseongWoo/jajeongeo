@@ -1,6 +1,7 @@
 package com.example.csappjava.adapters;
 
 import android.app.ActivityOptions;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -49,7 +50,16 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
         PostMarketplace data = datas.get(position);
         holder.title.setText(data.getTitle());
         holder.contents.setText(data.getContents());
-        holder.price.setText(data.getPrice()+" 원");
+        holder.time.setText(data.getTime());
+
+        if(!data.getTransaction().equals("true")){
+            holder.price.setText(data.getPrice()+" 원");
+        }
+        else{
+            holder.price.setText("거래 완료");
+            holder.title.setPaintFlags(holder.title.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.contents.setPaintFlags(holder.contents.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+        }
 
         storageRef.child(data.getImg()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -99,7 +109,7 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
         private TextView title;
         private TextView contents;
         private ImageView imgView;
-        private TextView price;
+        private TextView price, time;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -108,6 +118,7 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
             contents = itemView.findViewById(R.id.item_post_contents);
             price = itemView.findViewById(R.id.market_price);
             imgView = itemView.findViewById(R.id.marketplace_image);
+            time = itemView.findViewById(R.id.item_post_mtime);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

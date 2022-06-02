@@ -10,12 +10,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,12 +30,19 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.csappjava.FirebaseID;
 import com.example.csappjava.Mydata;
 import com.example.csappjava.R;
+import com.example.csappjava.Test1;
+import com.example.csappjava.adapters.ImageSliderAdapter;
+import com.example.csappjava.adapters.MultiImageAdapter;
+import com.example.csappjava.adapters.MultiImageAdapter2;
 import com.example.csappjava.adapters.PostAdapterCommunity;
 import com.example.csappjava.adapters.PostAdapterCommunityComment;
 import com.example.csappjava.models.PostCommunity;
@@ -43,6 +54,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -70,9 +86,11 @@ public class CommunityActivity2 extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
 
-    private RecyclerView mPostRecyclerView;
+    private RecyclerView mPostRecyclerView, mPostRecyclerView2;
     private ImageView imageView,backView;
     private String stringurl;
+    private String[] array;
+    ArrayList<Uri> uriList = new ArrayList<>();     // 이미지의 uri를 담을 ArrayList 객체
     Uri imgUri;
 
     private PostAdapterCommunity mAdapter;
@@ -83,12 +101,20 @@ public class CommunityActivity2 extends AppCompatActivity {
     private String commentpostId;
     private String deleteuser;
     private String postid,userid,title,contents,img,time,firstpath,secondpath;
+    private MultiImageAdapter2 adapter; // 리사이클러뷰에 적용시킬 어댑터
+    private ViewPager2 sliderViewPager;
+    private LinearLayout layoutIndicator;
+
+
 
     String myemail, myimg, mynickname, mypoint, myschool;
 
     Dialog dialogreport;    //신고
+
     String reportitem;
 
+    public CommunityActivity2() {
+    }
 
 
     @Override
@@ -96,7 +122,11 @@ public class CommunityActivity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community2);
 
-        mPostRecyclerView = findViewById(R.id.community_recycleview2);
+
+        mPostRecyclerView = findViewById(R.id.community2_recyclerView);
+        mPostRecyclerView2 = findViewById(R.id.community_recycleview2);
+        sliderViewPager = findViewById(R.id.sliderViewPager);
+        layoutIndicator = findViewById(R.id.layoutIndicators);
 
         Button commentbt = findViewById(R.id.commentbt);
         EditText commenttv = findViewById(R.id.comment);
@@ -142,7 +172,7 @@ public class CommunityActivity2 extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception exception) {
                 //이미지 로드 실패시
-                Toast.makeText(getApplicationContext(), "이미지가 없습니다.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "이미지가 없습니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -178,6 +208,7 @@ public class CommunityActivity2 extends AppCompatActivity {
                         data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());           //타임
                         data.put(FirebaseID.commentId,commentId.toString());                //댓글 id
 
+
                         mStore.collection(FirebaseID.post).document(firstpath).collection(secondpath).document(postid).collection(FirebaseID.comment).document(commentId).set(data, SetOptions.merge());  //값넣기
                         commenttv.setText("");
                     }
@@ -189,7 +220,68 @@ public class CommunityActivity2 extends AppCompatActivity {
         dialogreport.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
         dialogreport.setContentView(R.layout.dialog_report);             // xml 레이아웃 파일과 연결
 
+        for (int o = 0; o < array.length; o++){
+            String suri = array[o];
+            Uri uuri = Uri.parse(suri);
+
+            Log.d("LOGTEST", "array " + o + "번째 :" + array[o]);
+            uriList.add(uuri);  //uri를 list에 담는다.
+        }
+        adapter = new MultiImageAdapter2(uriList, getApplicationContext());
+        mPostRecyclerView.setAdapter(adapter);   // 리사이클러뷰에 어댑터 세팅
+        mPostRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));     // 리사이클러뷰 수평 스크롤 적용
+
+        //----------------------------------------------------
+        sliderViewPager.setOffscreenPageLimit(1);
+        sliderViewPager.setAdapter(new ImageSliderAdapter(this, array));
+
+        sliderViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                setCurrentIndicator(position);
+            }
+        });
+
+        setupIndicators(array.length);
     }
+
+    private void setupIndicators(int count) {
+        ImageView[] indicators = new ImageView[count];
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        params.setMargins(16, 8, 16, 8);
+
+        for (int i = 0; i < indicators.length; i++) {
+            indicators[i] = new ImageView(this);
+            indicators[i].setImageDrawable(ContextCompat.getDrawable(this,
+                    R.drawable.bg_indicator_inactive));
+            indicators[i].setLayoutParams(params);
+            layoutIndicator.addView(indicators[i]);
+        }
+        setCurrentIndicator(0);
+    }
+
+    private void setCurrentIndicator(int position) {
+        int childCount = layoutIndicator.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            ImageView imageView = (ImageView) layoutIndicator.getChildAt(i);
+            if (i == position) {
+                imageView.setImageDrawable(ContextCompat.getDrawable(
+                        this,
+                        R.drawable.bg_indicator_active
+                ));
+            } else {
+                imageView.setImageDrawable(ContextCompat.getDrawable(
+                        this,
+                        R.drawable.bg_indicator_inactive
+                ));
+            }
+        }
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -233,7 +325,6 @@ public class CommunityActivity2 extends AppCompatActivity {
                 intent.putExtra("img", img);
                 intent.putExtra("time", time);
                 startActivity(intent);
-
                 return true;
             default:
                 return super.onOptionsItemSelected (item);
@@ -284,7 +375,7 @@ public class CommunityActivity2 extends AppCompatActivity {
                                 }
                             });
 
-                            mPostRecyclerView.setAdapter(mAdaptercomment);
+                            mPostRecyclerView2.setAdapter(mAdaptercomment);
                         }
                     }
 
@@ -464,6 +555,7 @@ public class CommunityActivity2 extends AppCompatActivity {
         });
     }
 
+
     void getintent(){
         Intent intent = getIntent();
         postid = intent.getStringExtra("postid");
@@ -478,5 +570,14 @@ public class CommunityActivity2 extends AppCompatActivity {
         myimg = Mydata.getMyprofile();
         mynickname = Mydata.getMynickname();
         myschool = Mydata.getMyschool();
+        Log.d("LOGTEST",  "img :  " + img);
+
+        img = img.replace("[","");
+        img = img.replace("]","");
+        img = img.replaceAll(" ","");
+        array = img.split(",");
+        for (int o = 0; o < array.length; o++){
+            Log.d("LOGTEST", "array : " + array[o]);
+        }
     }
 }

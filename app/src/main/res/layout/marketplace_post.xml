@@ -61,7 +61,16 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
             </LinearLayout>
-
+            <TextView
+                android:id="@+id/item_post_mtime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_margin="8dp"
+                android:textSize="12dp"
+                android:textColor="@android:color/black"
+                android:singleLine="true"
+                tools:text="time"/>
 
         </LinearLayout>
 

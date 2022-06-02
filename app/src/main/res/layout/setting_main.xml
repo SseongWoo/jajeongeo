@@ -13,47 +13,77 @@
         android:layout_height="match_parent"
         tools:context=".Setting.SettingMain">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
             <include layout="@layout/lay_out_setting_toolbar" />
 
-            <Button
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="1dp"
+            android:background="@color/회색"
+            />
+
+            <TextView
                 android:id="@+id/mysetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginTop="40dp"
                 android:gravity="left"
                 android:text="내 설정"
+                android:textColor="@color/진한회색"
+                android:textSize="18dp"
                 app:backgroundTint="@color/회색" />
 
-            <Button
-                android:id="@+id/modsetting"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <View
+                android:layout_width="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:gravity="left"
-                android:text="모드설정"
-                app:backgroundTint="@color/회색" />
+                android:layout_height="1dp"
+                android:background="@color/회색"
+                />
+        <TextView
+        android:id="@+id/mysetting_sendemail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:textColor="@color/진한회색"
+        android:gravity="left"
+        android:textSize="18dp"
+        android:text="문의하기"
+        app:backgroundTint="@color/회색" />
 
-            <Button
-                android:id="@+id/mysetting_sendemail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:gravity="left"
-                android:text="문의하기"
-                app:backgroundTint="@color/회색" />
+        <View
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="1dp"
+            android:background="@color/회색"
+            />
+        <TextView
+            android:id="@+id/modsetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:gravity="left"
+            android:textColor="@color/진한회색"
+            android:textSize="18dp"
+            android:text="버전 1.0.0"
+            app:backgroundTint="@color/회색" />
 
+        <View
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="1dp"
+            android:background="@color/회색"
+            />
         </LinearLayout>
 
-    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"

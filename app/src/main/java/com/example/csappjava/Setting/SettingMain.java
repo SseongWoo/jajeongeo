@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,9 +45,9 @@ public class SettingMain extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference reference = FirebaseDatabase.getInstance().getReference("cs");
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-    private Button myset,modset;
+    private TextView myset,modset;
     private String sch;
-
+    private String myEmail;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,13 +55,12 @@ public class SettingMain extends AppCompatActivity {
         myset = findViewById(R.id.mysetting);
         modset = findViewById(R.id.modsetting);
         sch = Mydata.getMyschool();                  // 학교
-
+        myEmail = Mydata.getMyemail();
         final DrawerLayout drawerLayout = findViewById(R.id.setlay);
         Toolbar toolbar = findViewById(R.id.settingtoolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("설정");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,18 +126,8 @@ public class SettingMain extends AppCompatActivity {
         });
 
 
-        // 모드설정으로 이동
-//        modset.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(SettingMain.this, ModSetting.class);
-//                startActivity(intent);
-//            }
-//        });
-
-
         // 문의하기 이메일 보냄 조성우에게 ㅅㄱㅂㅇ
-        Button btn_ask_email = findViewById(R.id.mysetting_sendemail);
+        TextView btn_ask_email = findViewById(R.id.mysetting_sendemail);
         btn_ask_email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,8 +135,8 @@ public class SettingMain extends AppCompatActivity {
                 email.setType("plain/text");
                 String[] address = {"csw10211@kangwon.ac.kr"};
                 email.putExtra(Intent.EXTRA_EMAIL, address);
-                email.putExtra(Intent.EXTRA_SUBJECT, "test@test");
-                email.putExtra(Intent.EXTRA_TEXT, "회원 이메일 : ");
+                email.putExtra(Intent.EXTRA_SUBJECT, "문의합니다.");
+                email.putExtra(Intent.EXTRA_TEXT, "회원 이메일 : " + myEmail + "\n 문의내용 :");
                 startActivity(email);
             }
         });

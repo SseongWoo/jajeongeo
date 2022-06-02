@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,9 +54,9 @@ public class MarketplaceActivity2 extends AppCompatActivity {
     private FirebaseFirestore mStore = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-    private Button btn_chatstart;
+    private Button btn_chatstart, postend;
     private ImageView marketimg;
-    private String postid,userid,title,contents,img,time,firstpath,secondpath,price;
+    private String postid,userid,title,contents,img,time,firstpath,secondpath,price,transaction;
 
     Dialog dialogreport;    //신고
     String reportitem;
@@ -81,6 +82,15 @@ public class MarketplaceActivity2 extends AppCompatActivity {
 
         TextView Tprice = findViewById(R.id.market_price);
         Tprice.setText(price);
+
+        btn_chatstart = findViewById(R.id.btn_chatstart);
+
+        if(transaction.equals("true")){
+            Ttitle.setPaintFlags(Ttitle.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+            Tcontents.setPaintFlags(Tcontents.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+            Tprice.setPaintFlags(Tprice.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+            btn_chatstart.setText("거래가 완료된 게시물입니다.");
+        }
 
         if(img == "null"){
 
@@ -109,15 +119,39 @@ public class MarketplaceActivity2 extends AppCompatActivity {
             }
         });
         //-------------------------------------------------------------------------------------------
-        btn_chatstart = findViewById(R.id.btn_chatstart);
-        btn_chatstart.setOnClickListener(new View.OnClickListener() {
+
+        if(!transaction.equals("true")){
+            btn_chatstart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(MarketplaceActivity2.this, ChatActivity_2.class);
+                    intent.putExtra("userid",userid);
+                    startActivity(intent);
+                }
+            });
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "거래가 완료된 게시물입니다.", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+        postend = findViewById(R.id.btn_postend);
+        postend.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MarketplaceActivity2.this, ChatActivity_2.class);
-                intent.putExtra("userid",userid);
-                startActivity(intent);
+            public void onClick(View v) {
+                postendDialog();
             }
         });
+
+        if(mAuth.getCurrentUser().getUid().equals(userid)){             //게시물 작성자인지 확인하기
+            btn_chatstart.setVisibility(View.GONE);
+            postend.setVisibility(View.VISIBLE);
+        }
+        else{
+            postend.setVisibility(View.GONE);
+            btn_chatstart.setVisibility(View.VISIBLE);
+        }
 
         dialogreport = new Dialog(MarketplaceActivity2.this);       // Dialog 초기화
         dialogreport.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
@@ -174,11 +208,6 @@ public class MarketplaceActivity2 extends AppCompatActivity {
     }
 
     void deleteDialog(){
-        Intent intent = getIntent();
-        String document = intent.getStringExtra("document");
-        String postid = intent.getStringExtra("postid");
-        String uid = mAuth.getCurrentUser().getUid();
-
         AlertDialog.Builder builder = new AlertDialog.Builder(MarketplaceActivity2.this)
                 .setTitle("삭제")
                 .setMessage("삭제하시겠습니까?")
@@ -191,7 +220,7 @@ public class MarketplaceActivity2 extends AppCompatActivity {
                 .setNegativeButton("네", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(document.equals(uid)){
+                        if(userid.equals(mAuth.getCurrentUser().getUid())){
                             mStore.collection(FirebaseID.postMarket).document(postid)
                                     .delete()
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -278,6 +307,34 @@ public class MarketplaceActivity2 extends AppCompatActivity {
         });
     }
 
+    void postendDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MarketplaceActivity2.this)
+                .setTitle("거래 완료")
+                .setMessage("거래 완료")
+                .setPositiveButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(MarketplaceActivity2.this, "취소하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("네", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(userid.equals(mAuth.getCurrentUser().getUid())){
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("transaction","true");
+                            mStore.collection(FirebaseID.postMarket).document(firstpath).collection(secondpath).document(postid).set(data, SetOptions.merge());  //값넣기
+                            Toast.makeText(MarketplaceActivity2.this, "완료.", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(MarketplaceActivity2.this, "글 작성자가 아닙니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     void getintent(){
         Intent intent = getIntent();
@@ -288,6 +345,7 @@ public class MarketplaceActivity2 extends AppCompatActivity {
         img = intent.getStringExtra("img");
         time = intent.getStringExtra("time");
         price = intent.getStringExtra("price");
+        transaction = intent.getStringExtra("transaction");
         firstpath = Mydata.getFirstpath();
         secondpath = Mydata.getSecondpath();
     }

@@ -6,7 +6,7 @@
     android:id="@+id/toolbar1"
     app:title="@string/app_name"
     app:titleTextColor="@color/black"
-    android:background="@color/서브색"
+    android:background="@color/채팅색"
     app:menu="@menu/option_community_menu"
     app:navigationIcon="@drawable/ic_navmenu">
 

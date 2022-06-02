@@ -27,7 +27,5 @@ public class FirebaseID {
     public static String department = "department";
     public static String campus = "campus";
     public static String affiliation = "affiliation";
-
-
-
+    public static String transaction = "transaction";
 }

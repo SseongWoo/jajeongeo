@@ -13,6 +13,8 @@ public class Mydata extends Application {
     private static String mycampus;
     private static String myemail;
     private static String mydepartment;
+    private static String postpath1;
+    private static String postpath2;
 
     @Override
     public void onCreate() {
@@ -27,6 +29,8 @@ public class Mydata extends Application {
         mycampus = "";
         myemail = "";
         mydepartment = "";
+        postpath1 = "";
+        postpath2 = "";
     }
 
     public void Init(){
@@ -40,6 +44,8 @@ public class Mydata extends Application {
         mycampus = "";
         myemail = "";
         mydepartment = "";
+        postpath1 = "";
+        postpath2 = "";
     }
 
     public static String getFirstpath() {
@@ -120,5 +126,21 @@ public class Mydata extends Application {
 
     public static void setMydepartment(String mydepartment) {
         Mydata.mydepartment = mydepartment;
+    }
+
+    public static String getPostpath1() {
+        return postpath1;
+    }
+
+    public static void setPostpath1(String postpath1) {
+        Mydata.postpath1 = postpath1;
+    }
+
+    public static String getPostpath2() {
+        return postpath2;
+    }
+
+    public static void setPostpath2(String postpath2) {
+        Mydata.postpath2 = postpath2;
     }
 }

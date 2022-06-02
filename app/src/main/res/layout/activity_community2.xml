@@ -9,94 +9,140 @@
 
     <include layout="@layout/layout_navigation_toolbar2"/>
 
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/title2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="제목"
-                android:textSize="30dp"
-                android:layout_margin="10dp"
-                android:textColor="@color/black">
-
-            </TextView>
-
-            <ImageView
-                android:id="@+id/community2_image"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="fitStart">
+                android:orientation="vertical">
 
-            </ImageView>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/content2"
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/sliderViewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="400dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <View
+                        android:id="@+id/viewFadingEdge"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:background="@drawable/bg_fading_edge"
+                        app:layout_constraintBottom_toBottomOf="@id/sliderViewPager" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutIndicators"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:paddingBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="@id/viewFadingEdge"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                <TextView
+                    android:id="@+id/title2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="제목"
+                    android:textSize="18dp"
+                    android:textStyle="bold"
+                    android:layout_margin="10dp"
+                    android:textColor="@color/black">
+
+                </TextView>
+
+                <ImageView
+                    android:id="@+id/community2_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:scaleType="fitStart">
+                </ImageView>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="@color/회색"
+                    />
+
+                <TextView
+                    android:id="@+id/content2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="내용"
+                    android:textSize="14dp"
+                    android:layout_margin="10dp"
+                    android:textColor="@android:color/black">
+                </TextView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/community2_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:orientation="horizontal"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="5dp"
+                    android:background="@color/회색"
+                    />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/community_recycleview2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="내용"
-                android:textSize="20dp"
-                android:layout_margin="20dp"
-                android:textColor="@android:color/black">
-            </TextView>
-
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:background="#e4e4e4">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@color/대표색">
-
-            <EditText
-                android:id="@+id/comment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:textSize="20dp"
-                android:layout_margin="10dp"
-                android:textColor="@color/black"
-                android:layout_weight="1"
-                android:hint="댓글"
-                />
-
-            <Button
-                android:id="@+id/commentbt"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:text="입력"
-                android:layout_weight="4"
-                android:backgroundTint="@color/white"
-                android:textColor="#707070"/>
-
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/community_recycleview2"
+        <EditText
+            android:id="@+id/comment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:overScrollMode="never"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
+            android:textSize="14dp"
+            android:layout_margin="10dp"
+            android:textColor="@color/black"
+            android:layout_weight="1"
+            android:hint="댓글"/>
+        <Button
+            android:id="@+id/commentbt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:text="입력"
+            android:layout_weight="4"
+            android:backgroundTint="@color/white"
+            android:textColor="#707070"/>
     </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
-
-
-
-
-
 </LinearLayout>

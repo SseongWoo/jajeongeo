@@ -19,6 +19,7 @@
         android:src="@drawable/user" />
 
 
+
     <TextView
         android:layout_width="100dp"
         android:layout_height="30dp"
@@ -28,47 +29,148 @@
         android:id="@+id/mynickname"
         />
 
-    <Button
-        android:id="@+id/mysetting_profile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <View
+        android:layout_width="wrap_content"
         android:layout_marginLeft="5dp"
+        android:layout_marginTop="40dp"
         android:layout_marginRight="5dp"
-        android:text="프로필 사진 변경"
-        android:gravity="left"
-        app:backgroundTint="@color/회색"
+        android:layout_height="1px"
+        android:background="@color/회색"
         />
 
-    <Button
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:id="@+id/mysetting_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="프로필 사진 변경"
+            android:textSize="18dp"
+            app:backgroundTint="@color/회색" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/arrownext"
+            />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="1px"
+        android:background="@color/회색"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+    <TextView
         android:id="@+id/mysetting_nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:text="닉네임 변경"
+        android:textSize="18dp"
+        android:layout_weight="1"
         android:gravity="left"
         app:backgroundTint="@color/회색"
         />
 
-    <Button
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/arrownext"
+            />
+    </LinearLayout>
+    <View
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="1px"
+        android:background="@color/회색"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+    <TextView
     android:id="@+id/mysetting_logout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
     android:text="로그아웃"
+        android:layout_weight="1"
+        android:textSize="18dp"
     android:gravity="left"
     app:backgroundTint="@color/회색"
     />
 
-    <Button
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/arrownext"
+            />
+
+    </LinearLayout>
+    <View
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="1px"
+        android:background="@color/회색"
+        />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+        android:gravity="center">
+
+    <TextView
         android:id="@+id/mysetting_deleteid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:text="회원탈퇴"
+        android:layout_weight="1"
+        android:textSize="18dp"
         android:gravity="left"
         app:backgroundTint="@color/회색"
+        />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/arrownext"
+                />
+
+        </LinearLayout>
+    <View
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_height="1px"
+        android:background="@color/회색"
         />
 </LinearLayout>

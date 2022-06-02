@@ -4,7 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/add_image.xml" value="0.1715" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/arrownext.xml" value="0.2575" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/background_layout.xml" value="0.2285" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/bg_fading_edge.xml" value="0.2575" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/bg_indicator_active.xml" value="0.2575" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/bg_indicator_inactive.xml" value="0.2575" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/ic_back.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/ic_baseline_android_24.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/ic_myacount.xml" value="0.2285" />
@@ -12,19 +16,24 @@
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/ic_navhome.xml" value="0.2285" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/ic_navmenu.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/ic_navsetting.xml" value="0.297" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/multi_image_item.xml" value="0.2285" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/rectangle.xml" value="0.297" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/rectangle_bottom.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/round_edge.xml" value="0.2285" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/round_edge_black.xml" value="0.2575" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/round_edge_text.xml" value="0.2575" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/stroke.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/stroke2.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/stroke3.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/stroke4.xml" value="0.297" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/drawable/stroke5.xml" value="0.297" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/font/smallmid.xml" value="0.28229166666666666" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activit_marketplace_post.xml" value="0.33" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_chat.xml" value="0.21979166666666666" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_chatmain.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_chatting.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_chatting_post.xml" value="0.3619791666666667" />
-        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_community.xml" value="0.18" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_community.xml" value="0.33" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_community2.xml" value="0.22" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_community_post.xml" value="0.25" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_custom_scanner.xml" value="0.21979166666666666" />
@@ -35,6 +44,9 @@
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_main2.xml" value="0.3104166666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_marketplace.xml" value="0.18" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_marketplace2.xml" value="0.3619791666666667" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_marketplace_post.xml" value="0.3619791666666667" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_marketplace_post_search1.xml" value="0.3619791666666667" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_multi_image.xml" value="0.221875" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_my_page.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_pwd.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/activity_register.xml" value="0.33" />
@@ -46,8 +58,11 @@
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/chatting_post.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/community_comment.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/community_post.xml" value="0.3619791666666667" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/dialog_photo.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/dialog_report.xml" value="0.3619791666666667" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/item_slider.xml" value="0.2520833333333333" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/lay_out_setting_toolbar.xml" value="0.22239583333333332" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/layout_navigation_chat.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/layout_navigation_header.xml" value="0.31927083333333334" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/layout_navigation_toolbar.xml" value="0.25833333333333336" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/layout_navigation_toolbar1.xml" value="0.3619791666666667" />
@@ -57,12 +72,16 @@
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/layout_navigation_toolbarsetting.xml" value="0.22239583333333332" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/list_layout.xml" value="0.2128623188405797" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/marketplace_post.xml" value="0.3225806451612903" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/multi_image_item.xml" value="0.271875" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/multi_image_item2.xml" value="0.2520833333333333" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/mysetting.xml" value="0.22239583333333332" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/mysetting_nick.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/mysetting_profile.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/received_layout.xml" value="0.221875" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/send_layout.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/setting_main.xml" value="0.221875" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/test1.xml" value="0.33" />
+        <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/test2.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/testlayout.xml" value="0.3619791666666667" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/user_layout.xml" value="0.221875" />
         <entry key="..\:/Users/JO/StudioProjects/csappjava/app/src/main/res/layout/view_toolbar.xml" value="0.3619791666666667" />

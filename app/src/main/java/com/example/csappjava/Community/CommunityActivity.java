@@ -4,10 +4,19 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.csappjava.Chatting.ChatMainActivity;
 import com.example.csappjava.FirebaseID;
+import com.example.csappjava.Login.RegisterActivity3;
 import com.example.csappjava.MainActivity;
 import com.example.csappjava.Marketplace.MarketplaceActivity;
 import com.example.csappjava.Mydata;
@@ -30,12 +40,17 @@ import com.example.csappjava.R;
 import com.example.csappjava.Marketplace.BookApiActivity;
 import com.example.csappjava.Marketplace.BarcoadActivity;
 import com.example.csappjava.Setting.SettingMain;
+import com.example.csappjava.Test1;
 import com.example.csappjava.adapters.PostAdapterCommunity;
+import com.example.csappjava.image.MultiImageActivity;
+import com.example.csappjava.models.DateConverter;
 import com.example.csappjava.models.PostCommunity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -44,9 +59,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CommunityActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,7 +77,13 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
     private PostAdapterCommunity mAdapter;
     private List<PostCommunity> mDatas;
     TextView nicknametv, pointtv, schooltv;
-    int number;
+    ImageButton searchbt, searchbt2;
+    EditText searchet;
+    Spinner searchsp;
+    int number, count;
+    String menumyschool,menumycampus,menumydepartment,menumyaffiliation, spitem;
+    Timer timer;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,8 +95,62 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         findViewById(R.id.community_post_editbt).setOnClickListener(this);
         final DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
 
-        final Mydata mdata = (Mydata)getApplication();
-        mdata.Init();
+
+        //final Mydata mdata = (Mydata)getApplication();
+        //mdata.Init();
+
+        String uid = mAuth.getCurrentUser().getUid();                                   //자신의 정보 불러오기
+        DocumentReference docRef = mStore.collection(FirebaseID.user).document(uid);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        /*myemail = document.getData().get("email").toString();
+                        myimg = document.getData().get("img").toString();
+                        mynickname = document.getData().get("nickname").toString();
+                        mypoint = document.getData().get("point").toString();
+                        myschool = document.getData().get("school").toString();
+                        myschoolkr = document.getData().get("schoolKR").toString();
+                        mycampus = document.getData().get("campus").toString();
+                        mydepartment = document.getData().get("department").toString();
+                        myaffiliation = document.getData().get("affiliation").toString();*/
+
+                        //Log.d("LOGTEST",  "테스트 : " + Mydata.getMycampus());
+
+                        String postcampus = document.getData().get("campus").toString();
+                        String postschool = document.getData().get("school").toString();
+                        String postschoolkr = document.getData().get("schoolKR").toString();
+                        menudata(Mydata.getMyschool(), Mydata.getMycampus(), Mydata.getMydepartment(), Mydata.getMyaffiliation());
+
+
+                        if(postcampus.equals("본교")){
+                            Mydata.setFirstpath(postschool);
+                            Mydata.setSecondpath(postcampus);
+                        }
+                        else{
+                            Mydata.setFirstpath(postschool);
+                            Mydata.setSecondpath(postschoolkr + " " + postcampus);
+                        }
+                        postlist(Mydata.getFirstpath(),Mydata.getSecondpath(),"","");
+                        number = 0;
+
+                        //Log.d("LOGTEST",  myaffiliation);
+
+                        nicknametv.setText(Mydata.getMynickname());                                     //아이템 택스트 바꾸기
+                        //pointtv.setText();
+                        schooltv.setText(Mydata.getMyschoolkr());
+
+                        //Toast.makeText(CommunityActivity.this, document.getData().get("nickname") + ";", Toast.LENGTH_SHORT).show();
+                    } else {
+
+                    }
+                } else {
+
+                }
+            }
+        });
 
         Toolbar toolbar = findViewById(R.id.toolbar1);
         setSupportActionBar(toolbar);
@@ -93,67 +172,16 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         pointtv = headerView.findViewById(R.id.pointtv);
         schooltv = headerView.findViewById(R.id.schooltv);
 
-        String uid = mAuth.getCurrentUser().getUid();                                   //자신의 정보 불러오기
-        DocumentReference docRef = mStore.collection(FirebaseID.user).document(uid);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        /*myemail = document.getData().get("email").toString();
-                        myimg = document.getData().get("img").toString();
-                        mynickname = document.getData().get("nickname").toString();
-                        mypoint = document.getData().get("point").toString();
-                        myschool = document.getData().get("school").toString();
-                        myschoolkr = document.getData().get("schoolKR").toString();
-                        mycampus = document.getData().get("campus").toString();
-                        mydepartment = document.getData().get("department").toString();
-                        myaffiliation = document.getData().get("affiliation").toString();*/
+        searchsp = findViewById(R.id.community_search_spinner);
+        searchbt = findViewById(R.id.community_search_button);
+        searchbt2 = findViewById(R.id.community_search_button2);
+        searchet = findViewById(R.id.community_search_edittext);
+        searchsp = (Spinner) findViewById(R.id.community_search_spinner);
 
-                        Mydata.setMyemail(document.getData().get("email").toString());
-                        Mydata.setMyprofile(document.getData().get("img").toString());
-                        Mydata.setMynickname(document.getData().get("nickname").toString());
-                        Mydata.setMyschool(document.getData().get("school").toString());
-                        Mydata.setMyschoolkr(document.getData().get("schoolKR").toString());
-                        Mydata.setMycampus(document.getData().get("campus").toString());
-                        Mydata.setMydepartment(document.getData().get("department").toString());
-                        Mydata.setMyaffiliation(document.getData().get("affiliation").toString());
-
-                        Log.d("LOGTEST",  "테스트 : " + Mydata.getMycampus());
-                        Log.d("LOGTEST",  "테스트 : " + Mydata.getMyschool());
-                        Log.d("LOGTEST",  "테스트 : " + Mydata.getMyschoolkr());
-
-                        String postcampus = Mydata.getMycampus();
-                        String postschool = Mydata.getMyschool();
-                        String postschoolkr = Mydata.getMyschoolkr();
-                        Log.d("LOGTEST",  "테스트 : " + postcampus);
-                        Log.d("LOGTEST",  "테스트 : " + postschool);
-                        Log.d("LOGTEST",  "테스트 : " + postschoolkr);
-
-                        if(postcampus.equals("본교")){
-                            postlist(postschool,postcampus);
-                        }
-                        else{
-                            postlist(postschool,postschoolkr + " " + postcampus);
-                        }
-                        number = 0;
-
-                        //Log.d("LOGTEST",  myaffiliation);
-
-                        nicknametv.setText(Mydata.getMynickname());                                     //아이템 택스트 바꾸기
-                        //pointtv.setText();
-                        schooltv.setText(Mydata.getMyschoolkr());
-
-                        //Toast.makeText(CommunityActivity.this, document.getData().get("nickname") + ";", Toast.LENGTH_SHORT).show();
-                    } else {
-
-                    }
-                } else {
-
-                }
-            }
-        });
+        searchsp.setVisibility(View.GONE);
+        searchbt.setVisibility(View.GONE);
+        searchbt2.setVisibility(View.GONE);
+        searchet.setVisibility(View.GONE);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {    //네비게이션 메뉴 누를때 발생하는 이벤트
             @Override
@@ -195,12 +223,104 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
                     case R.id.nav_settings:
                         intent = new Intent(CommunityActivity.this, SettingMain.class);
                         startActivity(intent);
-                        finish();
                         break;
                 }
                 return true;
             }
         });
+
+        searchsp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(CommunityActivity.this,"선택된 아이템 : "+searchsp.getItemAtPosition(i),Toast.LENGTH_SHORT).show();
+                spitem = searchsp.getItemAtPosition(i).toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        searchbt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(searchet.length()>1){
+                    String search = searchet.getText().toString();
+                    if(number == 0){
+                        if (Mydata.getMycampus().equals("본교")) {
+                            postlist(Mydata.getMyschool(), Mydata.getMyschoolkr(),spitem,search);
+                        } else {
+                            postlist(Mydata.getMyschool(), Mydata.getMyschoolkr() + " " + Mydata.getMycampus(),spitem,search);
+                        }
+                    }
+                    else if(number == 1){
+                        if (Mydata.getMycampus().equals("본교")) {
+                            postlist(Mydata.getMyschool(), Mydata.getMydepartment(),spitem,search);
+                        } else {
+                            postlist(Mydata.getMyschool(), Mydata.getMycampus() + " " + Mydata.getMydepartment(),spitem,search);
+                        }
+                    }
+                    else if(number == 2){
+                        postlist("계열커뮤니티", Mydata.getMyaffiliation(),spitem,search);
+                    }
+                    searchet.setText(null);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "두글자 이상 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        searchbt2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(number == 0){
+                    if (Mydata.getMycampus().equals("본교")) {
+                        postlist(Mydata.getMyschool(), Mydata.getMyschoolkr(),"","");
+                    } else {
+                        postlist(Mydata.getMyschool(), Mydata.getMyschoolkr() + " " + Mydata.getMycampus(),"","");
+                    }
+                }
+                else if(number == 1){
+                    if (Mydata.getMycampus().equals("본교")) {
+                        postlist(Mydata.getMyschool(), Mydata.getMydepartment(),"","");
+                    } else {
+                        postlist(Mydata.getMyschool(), Mydata.getMycampus() + " " + Mydata.getMydepartment(),"","");
+                    }
+                }
+                else if(number == 2){
+                    postlist("계열커뮤니티", Mydata.getMyaffiliation(),"","");
+                }
+            }
+        });
+
+        TimerTask TT = new TimerTask() {
+            @Override
+            public void run() {
+                // 반복실행할 구문
+                if(count != 0){
+                    //Intent intent = new Intent(CommunityActivity.this, CommunityActivity.class);
+                    //startActivity(intent);
+                    //overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    //finish();
+                    //Log.d("LOGTEST",  "짜잔?" + count );
+                }
+                //count++;
+                //Log.d("LOGTEST",  "이게 실행되는거임?" + count );
+            }
+
+        };
+        timer = new Timer();
+        timer.schedule(TT, 0, 10000); //Timer 실행
+
+        Log.d("LOGTEST",  "테스트 : " + Mydata.getMyschoolkr());
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();//타이머 종료
     }
 
     @Override
@@ -212,12 +332,28 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /*MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.option_community_menu, menu);
-        return super.onCreateOptionsMenu(menu);*/
+
+        MenuItem item1 = menu.findItem(R.id.option_community1);
+        MenuItem item2 = menu.findItem(R.id.option_community2);
+        MenuItem item3 = menu.findItem(R.id.option_community3);
 
         if(Mydata.getMycampus().equals("본교")){
-            menu.add(Menu.NONE,Menu.FIRST,Menu.NONE,Mydata.getMyschool() + " 커뮤니티");
+            item1.setTitle(Mydata.getMyschoolkr() +" 커뮤니티");
+        }
+        else{
+            item1.setTitle(Mydata.getMyschoolkr() + " " + Mydata.getMycampus() + " 커뮤니티");
+        }
+        item2.setTitle(Mydata.getMydepartment() + " 커뮤니티");
+        item3.setTitle(Mydata.getMyaffiliation() + " 커뮤니티");
+
+        return super.onCreateOptionsMenu(menu);
+
+        /*
+
+        if(Mydata.getMycampus().equals("본교")){
+            menu.add(Menu.NONE,Menu.FIRST,Menu.NONE,Mydata.getMyschoolkr() +" 커뮤니티");
         }
         else{
             menu.add(Menu.NONE,Menu.FIRST,Menu.NONE,Mydata.getMyschoolkr() + " " + Mydata.getMycampus() + " 커뮤니티");
@@ -225,10 +361,10 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         menu.add(Menu.NONE,Menu.FIRST+10,Menu.NONE,Mydata.getMydepartment() + " 커뮤니티");
         menu.add(Menu.NONE,Menu.FIRST+20,Menu.NONE,Mydata.getMyaffiliation() + " 커뮤니티");
         menu.add(Menu.NONE,Menu.FIRST+30,Menu.NONE,"테스트페이지");
-        menu.add(Menu.NONE,Menu.FIRST+40,Menu.NONE,"테스트페이지");
 
-        //Log.d("LOGTEST",  ", " + maffiliation);
-        return true;
+
+        Log.d("LOGTEST", Mydata.getMyschoolkr() + ", " + Mydata.getMydepartment() + ", " + Mydata.getMyaffiliation());
+        return true;*/
     }
 
     //앱바(App Bar)에 표시된 액션 또는 오버플로우 메뉴가 선택되면
@@ -237,51 +373,63 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
+
         switch (item.getItemId()) {
-            case Menu.FIRST:
+            case R.id.option_community1:
                 if (number == 0) {                            //학교커뮤니티
                     Toast.makeText(getApplicationContext(), "해당 영역입니다.", Toast.LENGTH_SHORT).show();
                 } else {
                     if (Mydata.getMycampus().equals("본교")) {
-                        postlist(Mydata.getMyschool(), Mydata.getMyschoolkr());
+                        postlist(Mydata.getMyschool(), Mydata.getMyschoolkr(),"","");
                     } else {
-                        postlist(Mydata.getMyschool(), Mydata.getMyschoolkr() + " " + Mydata.getMycampus());
+                        postlist(Mydata.getMyschool(), Mydata.getMyschoolkr() + " " + Mydata.getMycampus(),"","");
                     }
                     number = 0;
                 }
                 return true;
-            case Menu.FIRST + 10:
+            case R.id.option_community2:
                 if (number == 1) {                                //학과커뮤니티
                     Toast.makeText(getApplicationContext(), "해당 영역입니다.", Toast.LENGTH_SHORT).show();
                 } else {
                     if (Mydata.getMycampus().equals("본교")) {
-                        postlist(Mydata.getMyschool(), Mydata.getMydepartment());
+                        postlist(Mydata.getMyschool(), Mydata.getMydepartment(),"","");
                     } else {
-                        postlist(Mydata.getMyschool(), Mydata.getMycampus() + " " + Mydata.getMydepartment());
+                        postlist(Mydata.getMyschool(), Mydata.getMycampus() + " " + Mydata.getMydepartment(),"","");
                     }
                     number = 1;
                 }
                 return true;
 
-            case Menu.FIRST + 20:
+            case R.id.option_community3:
                 if (number == 2) {                                //학과커뮤니티
                     Toast.makeText(getApplicationContext(), "해당 영역입니다.", Toast.LENGTH_SHORT).show();
                 } else {
-                    postlist("계열커뮤니티", Mydata.getMyaffiliation());
+                    postlist("계열커뮤니티", Mydata.getMyaffiliation(),"","");
                     number = 2;
                     Log.d("LOGTEST",  "테스트 : " + Mydata.getMyaffiliation());
                 }
                 return true;
 
-            case Menu.FIRST + 30:
-                Intent intent = new Intent(CommunityActivity.this, BookApiActivity.class);
+            /*case R.id.option_community4:
+                Intent intent = new Intent(CommunityActivity.this, MultiImageActivity.class);
                 startActivity(intent);
-                return true;
+                return true;*/
 
-            case Menu.FIRST + 40:
-                Intent intent2 = new Intent(CommunityActivity.this, BarcoadActivity.class);
-                startActivity(intent2);
-                return true;
+            case R.id.item1:
+                if(searchsp.getVisibility() == View.GONE){
+                    searchsp.setVisibility(View.VISIBLE);
+                    searchbt.setVisibility(View.VISIBLE);
+                    searchbt2.setVisibility(View.VISIBLE);
+                    searchet.setVisibility(View.VISIBLE);
+                }
+                else{
+                    searchsp.setVisibility(View.GONE);
+                    searchbt.setVisibility(View.GONE);
+                    searchbt2.setVisibility(View.GONE);
+                    searchet.setVisibility(View.GONE);
+                }
+
+
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -308,11 +456,10 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         alertDialog.show();
     }
 
-    void postlist(String path1, String path2) {
+    void postlist(String path1, String path2, String menu, String search) {     //menu엔 작성자 닉네임 내용 중에 하나
         mDatas = new ArrayList<>();
-
-        Mydata.setFirstpath(path1);
-        Mydata.setSecondpath(path2);
+        Mydata.setPostpath1(path1);
+        Mydata.setPostpath2(path2);
 
         mStore.collection(FirebaseID.post).document(path1).collection(path2)
                 .orderBy(FirebaseID.timestamp, Query.Direction.DESCENDING)
@@ -331,14 +478,38 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
                                 String recommendation = String.valueOf(shot.get(FirebaseID.img));
                                 String tag = String.valueOf(shot.get(FirebaseID.img));
                                 String commentnum = String.valueOf(shot.get(FirebaseID.img));
-                                //String time = String.valueOf(shot.get(clock()));
+                                String nick = String.valueOf(shot.get(FirebaseID.nickname));
+                                //String time = String.valueOf(shot.get(FirebaseID.timestamp));
+                                //String time = String.valueOf(shot.get(FirebaseID.timestamp));
+                                //String time = DateConverter.formatTimeString(((Timestamp) shot.get(FirebaseID.timestamp)).toDate().getTime());
+                                String time = new String();
+                                try {
+                                    time = DateConverter.formatTimeString(((Timestamp) shot.get(FirebaseID.timestamp)).toDate().getTime());
+                                } catch (Exception e) {
+                                    Log.d("LOGTEST",  "오류오류" + title);
+                                }
+
                                 //String time = String.valueOf(shot.get(FirebaseID.timestamp));
                                 //Date date = Date.valueOf(shot.get(FirebaseID.timestamp));
                                 //data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());
 
-                                PostCommunity data = new PostCommunity(postId, userId, title, contents, img, recommendation, tag, commentnum);
-                                //String postId, String userId, String title, String contents, String img, String recommendation, String tag
-                                mDatas.add(data);
+                                if(menu.equals("")&&search.equals("")){
+                                    //PostCommunity data = new PostCommunity(postId, userId, title, contents, img, recommendation, tag, commentnum, nick, time);
+                                    PostCommunity data = new PostCommunity(postId, userId, title, contents, img, recommendation, tag, commentnum, nick, time);
+                                    mDatas.add(data);
+                                }
+                                else if(menu.equals("닉네임")&&nick.contains(search)){
+                                    PostCommunity data = new PostCommunity(postId, userId, title, contents, img, recommendation, tag, commentnum, nick, time);
+                                    mDatas.add(data);
+                                }
+                                else if(menu.equals("내용")&&contents.contains(search)){
+                                    PostCommunity data = new PostCommunity(postId, userId, title, contents, img, recommendation, tag, commentnum, nick, time);
+                                    mDatas.add(data);
+                                }
+                                else if(menu.equals("제목")&&title.contains(search)){
+                                    PostCommunity data = new PostCommunity(postId, userId, title, contents, img, recommendation, tag, commentnum, nick, time);
+                                    mDatas.add(data);
+                                }
                             }
 
                             mAdapter = new PostAdapterCommunity(mDatas);
@@ -385,4 +556,17 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(path2 + " 커뮤니티");
     }
+
+    void menudata(String myschooldata, String mycampusdata, String mydepartmentdata, String myaffiliationdata){
+        menumyschool = myschooldata;
+        menumycampus = mycampusdata;
+        menumydepartment = mydepartmentdata;
+        menumyaffiliation = myaffiliationdata;
+    }
+
+
+
+
+
+
 }

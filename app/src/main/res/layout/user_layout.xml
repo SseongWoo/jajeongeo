@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,23 +11,24 @@
     android:clickable="true">
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:background="@drawable/ic_myacount"
-        android:layout_marginLeft="11dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="5dp" />
+ />
 
     <TextView
         android:id="@+id/userName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="7dp"
         android:layout_marginBottom="10dp"
         android:text="UserName"
         android:textColor="@color/black"
         android:textSize="15dp"
-        android:textStyle="bold" />
+        android:fontFamily="@font/regular"
+         />
 
 </LinearLayout>

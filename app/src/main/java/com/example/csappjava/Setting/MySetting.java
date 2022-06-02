@@ -1,6 +1,9 @@
 package com.example.csappjava.Setting;
 
 import static com.example.csappjava.LoginActivity.context2;
+
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.view.MenuItem;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -49,9 +52,10 @@ public class MySetting extends AppCompatActivity {
     private ImageView imageView;
     private String userpass,sch,getprofiled;
     private TextView Mynickname;
+    public SharedPreferences pref;
+    public SharedPreferences.Editor editor;
 
     Uri imgUri;
-
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +100,6 @@ public class MySetting extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
-        System.out.println(getprofiled);
 
         // 유저 닉네임 가져오기기
         reference.child(sch+"/user").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
@@ -109,7 +112,7 @@ public class MySetting extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
-        Button btn_profile = findViewById(R.id.mysetting_profile);
+        TextView btn_profile = findViewById(R.id.mysetting_profile);
         btn_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,21 +123,27 @@ public class MySetting extends AppCompatActivity {
         });
 
 
-        Button btn_nicknamechange = findViewById(R.id.mysetting_nickname);
+        TextView btn_nicknamechange = findViewById(R.id.mysetting_nickname);
         btn_nicknamechange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MySetting.this,MySetting_nickname.class);
+                Intent intent = new Intent(MySetting.this, MySetting_nickname.class);
                 startActivity(intent);
             }
         });
 
         // 로그아웃 하기
-        Button btn_logout = findViewById(R.id.mysetting_logout);
+        TextView btn_logout = findViewById(R.id.mysetting_logout);
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                pref = getSharedPreferences("Auto",Activity.MODE_PRIVATE);
+                editor = pref.edit();
+                editor.putBoolean("Autologin",false);
+                editor.commit();
                 mAuth.signOut();
+
                 Intent intent = new Intent(MySetting.this,LoginActivity.class);
                 startActivity(intent);
                 Toast.makeText(MySetting.this,"로그아웃 완료",Toast.LENGTH_SHORT).show();
@@ -143,12 +152,18 @@ public class MySetting extends AppCompatActivity {
 
 
         // 탈퇴
-        Button btn_delete = findViewById(R.id.mysetting_deleteid);
+        TextView btn_delete = findViewById(R.id.mysetting_deleteid);
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                pref = getSharedPreferences("Auto",Activity.MODE_PRIVATE);
+                editor = pref.edit();
+                editor.putBoolean("Autologin",false);
+                editor.commit();
+
                 mAuth.getCurrentUser().delete();
-                Intent intent = new Intent(MySetting.this,LoginActivity.class);
+                Intent intent = new Intent(MySetting.this, LoginActivity.class);
                 startActivity(intent);
                 Toast.makeText(MySetting.this,"탈퇴 완료",Toast.LENGTH_SHORT).show();
             }
@@ -178,4 +193,3 @@ public class MySetting extends AppCompatActivity {
         }
     }
 }
-

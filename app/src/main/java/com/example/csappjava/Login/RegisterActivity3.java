@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.csappjava.Community.CommunityActivity;
 import com.example.csappjava.FirebaseID;
+import com.example.csappjava.MainLoadingActivity;
 import com.example.csappjava.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -244,7 +245,7 @@ public class RegisterActivity3 extends AppCompatActivity {
                     //Log.d("ENDLOG2", "user : " + user.getUid() + "usermap" + userMap3);
                     mStore.collection(FirebaseID.user).document(userdata).update(userMap3);
                     finish();
-                    Intent intent = new Intent(RegisterActivity3.this, CommunityActivity.class);
+                    Intent intent = new Intent(RegisterActivity3.this, MainLoadingActivity.class);
                     startActivity(intent);
                     Toast.makeText(RegisterActivity3.this,"회원가입이 완료되었습니다.",Toast.LENGTH_SHORT).show();
                 }

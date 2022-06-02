@@ -11,14 +11,15 @@ public class PostMarketplace {
     private String img; //이미지
     private String time; //시간
     private String price;   //가격
+    private String nick;
     private Date date;
-
+    private String transaction; //거래 완료 유무
 
 
     public PostMarketplace() {
     }
 
-    public PostMarketplace(String postId, String userId, String title, String contents, String img, String price) {
+    public PostMarketplace(String postId, String userId, String title, String contents, String img, String price, String nick, String time, String transaction) {
         this.postId = postId;
         this.userId = userId;
         this.title = title;
@@ -27,6 +28,8 @@ public class PostMarketplace {
         this.time = time;
         this.price = price;
         this.date = date;
+        this.nick = nick;
+        this.transaction = transaction;
     }
 
     public String getPostId() {
@@ -93,6 +96,22 @@ public class PostMarketplace {
         this.date = date;
     }
 
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
+
+    public String getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(String transaction) {
+        this.transaction = transaction;
+    }
+
     @Override
     public String toString() {
         return "PostMarketplace{" +
@@ -103,6 +122,8 @@ public class PostMarketplace {
                 ", img='" + img + '\'' +
                 ", time='" + time + '\'' +
                 ", price='" + price + '\'' +
+                ", price='" + nick + '\'' +
+                ", transaction='" + transaction + '\'' +
                 ", date=" + date +
                 '}';
     }

@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <item android:title="세부 카테고리">
+    <item
+        android:id="@+id/item1"
+        android:enabled="true"
+        android:icon="@drawable/ic_search"
+        android:title="메뉴2"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/item2"
+        android:enabled="true"
+        android:icon="@drawable/ic_moremenu"
+        android:title="메뉴3"
+        app:showAsAction="always">
         <menu>
-
             <item
                 android:id="@+id/option_community1"
                 android:title="학교커뮤니티"/>
@@ -15,15 +24,9 @@
 
             <item
                 android:id="@+id/option_community3"
-                android:title="테스트페이지" />
+                android:title="계열커뮤니티" />
+
 
         </menu>
     </item>
-
-
-    <item
-        android:id="@+id/option_serch"
-        android:title="검색하기"
-        app:showAsAction="never"/>
-
 </menu>

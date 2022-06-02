@@ -70,7 +70,7 @@ public class MySetting_nickname extends AppCompatActivity {
                 getprofiled  = userProfile.getprofile();
 
                 if(getprofiled!="null"){
-                    FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");        //파이어베이스 스토리지 경로지정
+                    FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-8184e.appspot.com/");        //파이어베이스 스토리지 경로지정
                     StorageReference storageRef = storage.getReference();
 
                     storageRef.child(getprofiled).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -87,16 +87,29 @@ public class MySetting_nickname extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
+        // 유저 닉네임 가져오기기
+        reference.child(sch+"/user").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ChatNicknameModel chat_test = snapshot.getValue(ChatNicknameModel.class);
+                ednick.setText(chat_test.getNickNames());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+
         btn_change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ednick.getText().toString().length() < 2||ednick.getText().toString()==null) {
+                if (ednick.getText().toString().length() < 2 ||ednick.getText().toString()==null) {
                     Toast.makeText(getApplicationContext(), "글자수가 적거나 공백입니다.", Toast.LENGTH_SHORT).show();
-                } else {
+                }
+                else if (ednick.getText().toString().length() > 6){
+                    Toast.makeText(getApplicationContext(), "글자수가 많습니다 6글자 이하로 입력해 주세요", Toast.LENGTH_SHORT).show();
+                } else{
                     reference.child(sch + "/user").child(mAuth.getUid()).child("nickNames").setValue(ednick.getText().toString());         // 경로
                     finish();
-                    Toast.makeText(getApplicationContext(), "닉네임 변경 완료ㅗ.", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(getApplicationContext(), "닉네임 변경 완료.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

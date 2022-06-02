@@ -16,11 +16,12 @@ public class PostCommunity {
     private String recommendation;  //추천
     private String tag;             //태그
     private String commentnum;         //댓글수
+    private String nick;
 
     public PostCommunity() {
     }
 
-    public PostCommunity(String postId, String userId, String title, String contents, String img, String recommendation, String tag, String commentnum) {
+    public PostCommunity(String postId, String userId, String title, String contents, String img, String recommendation, String tag, String commentnum, String nick, String time) {
         this.postId = postId;
         this.userId = userId;
         this.title = title;
@@ -31,6 +32,7 @@ public class PostCommunity {
         this.recommendation = recommendation;
         this.tag = tag;
         this.commentnum = commentnum;
+        this.nick = nick;
     }
 
     public String getPostId() {
@@ -113,6 +115,14 @@ public class PostCommunity {
         this.commentnum = commentnum;
     }
 
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
+
     @Override
     public String toString() {
         return "PostCommunity{" +
@@ -126,6 +136,7 @@ public class PostCommunity {
                 ", recommendation='" + recommendation + '\'' +
                 ", tag='" + tag + '\'' +
                 ", commentnum='" + commentnum + '\'' +
+                ", nick='" + nick + '\'' +
                 '}';
     }
 }

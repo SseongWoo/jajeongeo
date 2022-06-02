@@ -6,30 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="10dp"
-            android:background="@drawable/stroke">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:background="@drawable/stroke">
 
         <TextView
             android:id="@+id/item_comment_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18dp"
+            android:textSize="14dp"
             android:textColor="@color/black"
             android:textStyle="bold"
             android:layout_margin="6dp"
             tools:text="title"/>
 
-            <ImageView
-                android:id="@+id/comment_img"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:layout_marginBottom="6dp"
-                android:layout_gravity="center"/>
+        <ImageView
+            android:id="@+id/comment_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:layout_marginBottom="6dp"
+            android:layout_gravity="center"/>
 
         <TextView
             android:id="@+id/item_post_comment"
@@ -37,10 +37,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="5dp"
-            android:textSize="16dp"
-            android:textColor="@android:color/holo_blue_light"
+            android:textSize="10dp"
+            android:textColor="@color/black"
             tools:text="Contents"/>
 
-        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

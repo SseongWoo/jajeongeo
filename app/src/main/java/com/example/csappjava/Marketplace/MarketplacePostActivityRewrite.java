@@ -24,7 +24,6 @@ import com.example.csappjava.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
@@ -54,7 +53,7 @@ public class MarketplacePostActivityRewrite extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activit_marketplace_post);
+        setContentView(R.layout.activity_marketplace_post);
 
         mTitle = findViewById(R.id.market_post_title_edit);
         mContents = findViewById(R.id.market_post_contents_edit);

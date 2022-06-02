@@ -14,4 +14,8 @@
     <color name="게시글색">#E0CBFF</color>
     <color name="회색">#bdbdbd</color>
     <color name="진한회색">#808080</color>
+    <color name="채팅색">#9f69f9</color>
+    <color name="채팅배경색">#bc97fa</color>
+    <color name="커뮤니티1">#d4bff9</color>
+    <color name="커뮤니티글씨">#7e3ff2</color>
 </resources>

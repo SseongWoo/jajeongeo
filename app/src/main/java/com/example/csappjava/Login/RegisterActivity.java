@@ -129,12 +129,13 @@ public class RegisterActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
 
-                            UserAccount account = new UserAccount();
-                            account .setIdToken(firebaseUser.getUid());
-                            account .setEmailID(firebaseUser.getEmail());
-                            account .setNickNames("테스트계정");
-                            account .setPassword(strPwd);
-                            account.setprofile("null");
+                                UserAccount account = new UserAccount();
+                                account .setIdToken(firebaseUser.getUid());
+                                account .setEmailID(firebaseUser.getEmail());
+                                account .setNickNames("테스트계정");
+                                account .setPassword(strPwd);
+                                account.setprofile("null");
+
                                 Map<String,Object> userMapR = new HashMap<>();
                                 userMapR.put(FirebaseID.userId, firebaseUser.getUid());
                                 userMapR.put(FirebaseID.email, firebaseUser.getEmail());
@@ -147,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 userMapR.put(FirebaseID.point,point);
                                 userMapR.put(FirebaseID.img,strurl);
 
-                                mDatabaseRef.child(mEtmail2.getText().toString()+"/user").child(firebaseUser.getUid()).setValue(account );         // 경로
+                                mDatabaseRef.child(mEtmail2.getText().toString()+"/user").child(firebaseUser.getUid()).setValue(account);         // 경로
                                 //mDatabaseRef.child("kangwon/user").child(firebaseUser.getUid()).setValue(account );         // 경로
 
                                 mStore.collection(FirebaseID.user).document(firebaseUser.getUid()).set(userMapR, SetOptions.merge());
@@ -155,7 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(RegisterActivity.this,RegisterActivity3.class);
+                                Intent intent = new Intent(RegisterActivity.this,RegisterActivity2.class);
                                 intent.putExtra("school",school);
                                 startActivity(intent);
                             }

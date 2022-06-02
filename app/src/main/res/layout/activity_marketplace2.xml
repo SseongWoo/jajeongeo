@@ -92,10 +92,18 @@
     </androidx.core.widget.NestedScrollView>
 
     <Button
+        android:id="@+id/btn_postend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/채팅색"
+        android:text="거래 완료"
+        android:textColor="@color/white" />
+
+    <Button
         android:id="@+id/btn_chatstart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#4E9F5F"
+        android:backgroundTint="@color/채팅색"
         android:text="채팅 하기"
         android:textColor="@color/white" />
 
