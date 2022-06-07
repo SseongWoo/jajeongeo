@@ -3,6 +3,14 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven {
+            url 'https://maven.google.com'
+        }
+        jcenter()
+        maven { url 'https://maven.fabric.io/public' }
+        maven {
+            url 'https://naver.jfrog.io/artifactory/maven/'
+        }
     }
 }
 
@@ -12,6 +20,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://maven.google.com'
+        }
+        jcenter()
+        maven { url 'https://maven.fabric.io/public' }
+        maven {
+            url 'https://naver.jfrog.io/artifactory/maven/'
+        }
     }
 }
 rootProject.name = "csappjava"

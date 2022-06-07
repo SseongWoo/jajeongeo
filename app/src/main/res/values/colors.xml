@@ -18,4 +18,5 @@
     <color name="채팅배경색">#bc97fa</color>
     <color name="커뮤니티1">#d4bff9</color>
     <color name="커뮤니티글씨">#7e3ff2</color>
+    <color name="red">#FF0000</color>
 </resources>

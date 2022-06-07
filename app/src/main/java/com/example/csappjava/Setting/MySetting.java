@@ -4,6 +4,8 @@ import static com.example.csappjava.LoginActivity.context2;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.MenuItem;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -29,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.example.csappjava.LoginActivity;
 import com.example.csappjava.MainActivity;
 import com.example.csappjava.Mydata;
+import com.example.csappjava.ProgressDialog;
 import com.example.csappjava.R;
 import com.example.csappjava.models.ChatNicknameModel;
 import com.example.csappjava.models.UserProfile;
@@ -54,12 +57,17 @@ public class MySetting extends AppCompatActivity {
     private TextView Mynickname;
     public SharedPreferences pref;
     public SharedPreferences.Editor editor;
+    ProgressDialog progressDialog;
 
     Uri imgUri;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mysetting);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.setCancelable(false);
 
 
         imageView = findViewById(R.id.myprofile);
@@ -80,37 +88,34 @@ public class MySetting extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserProfile userProfile = snapshot.getValue(UserProfile.class);
-                getprofiled  = userProfile.getprofile();
 
-                if(getprofiled!="null"){
-                    FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");        //파이어베이스 스토리지 경로지정
-                    StorageReference storageRef = storage.getReference();
+                if(!userProfile.toString().isEmpty()) {
+                    getprofiled  = userProfile.getprofile();
 
-                    storageRef.child(getprofiled).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Glide.with(getApplicationContext())
-                                    .load(uri)
-                                    .into(imageView);
-                        }
-                    });
+                    if(getprofiled!="null"){
+                        FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");        //파이어베이스 스토리지 경로지정
+                        StorageReference storageRef = storage.getReference();
+
+                        storageRef.child(getprofiled).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Glide.with(getApplicationContext())
+                                        .load(uri)
+                                        .into(imageView);
+                            }
+                        });
+                    }
                 }
+
+
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
-
+        Mynickname.setText(Mydata.getMynickname());
         // 유저 닉네임 가져오기기
-        reference.child(sch+"/user").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ChatNicknameModel chat_test = snapshot.getValue(ChatNicknameModel.class);
-                Mynickname.setText(chat_test.getNickNames());
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
 
         TextView btn_profile = findViewById(R.id.mysetting_profile);
         btn_profile.setOnClickListener(new View.OnClickListener() {

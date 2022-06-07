@@ -4,22 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,18 +27,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.csappjava.FirebaseID;
 import com.example.csappjava.Mydata;
+import com.example.csappjava.ProgressDialog;
 import com.example.csappjava.R;
-import com.example.csappjava.Test1;
-import com.example.csappjava.adapters.ImageSliderAdapter;
-import com.example.csappjava.adapters.MultiImageAdapter;
 import com.example.csappjava.adapters.MultiImageAdapter2;
 import com.example.csappjava.adapters.PostAdapterCommunity;
 import com.example.csappjava.adapters.PostAdapterCommunityComment;
@@ -51,15 +44,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -80,53 +66,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 public class CommunityActivity2 extends AppCompatActivity {
 
     private FirebaseFirestore mStore = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-
     private RecyclerView mPostRecyclerView, mPostRecyclerView2;
     private ImageView imageView,backView;
     private String stringurl;
     private String[] array;
     ArrayList<Uri> uriList = new ArrayList<>();     // 이미지의 uri를 담을 ArrayList 객체
     Uri imgUri;
-
     private PostAdapterCommunity mAdapter;
     private List<PostCommunity> mDatas;
     private PostAdapterCommunityComment mAdaptercomment;
     private List<PostCommunityComment> mDatascomment;
-
     private String commentpostId;
     private String deleteuser;
     private String postid,userid,title,contents,img,time,firstpath,secondpath;
     private MultiImageAdapter2 adapter; // 리사이클러뷰에 적용시킬 어댑터
-    private ViewPager2 sliderViewPager;
-    private LinearLayout layoutIndicator;
-
-
-
     String myemail, myimg, mynickname, mypoint, myschool;
-
-    Dialog dialogreport;    //신고
-
+    Dialog dialogreport, dialogimg;    //신고
     String reportitem;
-
-    public CommunityActivity2() {
-    }
-
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_community2);
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.setCancelable(false);
+        //progressDialog.show();
+        Mydata.setCount(1);
 
         mPostRecyclerView = findViewById(R.id.community2_recyclerView);
         mPostRecyclerView2 = findViewById(R.id.community_recycleview2);
-        sliderViewPager = findViewById(R.id.sliderViewPager);
-        layoutIndicator = findViewById(R.id.layoutIndicators);
 
         Button commentbt = findViewById(R.id.commentbt);
         EditText commenttv = findViewById(R.id.comment);
@@ -138,8 +116,6 @@ public class CommunityActivity2 extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar (); //앱바 제어를 위해 툴바 액세스
         actionBar.setDisplayHomeAsUpEnabled (true);
         actionBar.setTitle(secondpath);
-
-        Log.d("LOGTEST",  "mydata :  " + Mydata.getFirstpath());
 
         TextView Ttitle = findViewById(R.id.title2);
         Ttitle.setText(title);
@@ -153,28 +129,6 @@ public class CommunityActivity2 extends AppCompatActivity {
         else{
             imageView = findViewById(R.id.community2_image);
         }
-
-        FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");             //파이어베이스 스토리지 경로지정
-        StorageReference storageRef = storage.getReference();
-        //storageRef.child("images/test.png")
-        //storageRef.child("images/"+img+".png")
-        storageRef.child(img).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                //이미지 로드 성공시
-
-                Glide.with(getApplicationContext())
-                        .load(uri)
-                        .into(imageView);
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                //이미지 로드 실패시
-                //Toast.makeText(getApplicationContext(), "이미지가 없습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         commentbt.setOnClickListener(new Button.OnClickListener() {                         //댓글 작성
             @Override
@@ -192,9 +146,7 @@ public class CommunityActivity2 extends AppCompatActivity {
                             stringurl = "null";
                         } else {       //이미지가 있을 때
                             StorageReference imgRef = firebaseStorage.getReference("/images/comment/" + user + filename);
-
                             UploadTask uploadTask = imgRef.putFile(imgUri);
-                            //stringurl = imgRef.getDownloadUrl().toString();
                             stringurl = "/images/comment/" + user + filename;
                         }
 
@@ -220,73 +172,36 @@ public class CommunityActivity2 extends AppCompatActivity {
         dialogreport.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
         dialogreport.setContentView(R.layout.dialog_report);             // xml 레이아웃 파일과 연결
 
-        for (int o = 0; o < array.length; o++){
-            String suri = array[o];
-            Uri uuri = Uri.parse(suri);
+        dialogimg = new Dialog(CommunityActivity2.this);       // Dialog 초기화
+        dialogimg.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+        dialogimg.setContentView(R.layout.dialog_photo);             // xml 레이아웃 파일과 연결
+        imgdialog = dialogimg.findViewById(R.id.imagedialog);
+        dialogimg.setCancelable(false);
 
-            Log.d("LOGTEST", "array " + o + "번째 :" + array[o]);
-            uriList.add(uuri);  //uri를 list에 담는다.
-        }
-        adapter = new MultiImageAdapter2(uriList, getApplicationContext());
-        mPostRecyclerView.setAdapter(adapter);   // 리사이클러뷰에 어댑터 세팅
-        mPostRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));     // 리사이클러뷰 수평 스크롤 적용
+        if(!array[0].equals("null")){
+            for (int o = 0; o < array.length; o++){
+                Loadingstart();
+                String suri = array[o];
+                Uri uuri = Uri.parse(suri);
 
-        //----------------------------------------------------
-        sliderViewPager.setOffscreenPageLimit(1);
-        sliderViewPager.setAdapter(new ImageSliderAdapter(this, array));
-
-        sliderViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                setCurrentIndicator(position);
+                uriList.add(uuri);  //uri를 list에 담는다.
             }
-        });
+            adapter = new MultiImageAdapter2(uriList, getApplicationContext());
+            mPostRecyclerView.setAdapter(adapter);   // 리사이클러뷰에 어댑터 세팅
+            mPostRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));     // 리사이클러뷰 수평 스크롤 적용
 
-        setupIndicators(array.length);
-    }
-
-    private void setupIndicators(int count) {
-        ImageView[] indicators = new ImageView[count];
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        params.setMargins(16, 8, 16, 8);
-
-        for (int i = 0; i < indicators.length; i++) {
-            indicators[i] = new ImageView(this);
-            indicators[i].setImageDrawable(ContextCompat.getDrawable(this,
-                    R.drawable.bg_indicator_inactive));
-            indicators[i].setLayoutParams(params);
-            layoutIndicator.addView(indicators[i]);
-        }
-        setCurrentIndicator(0);
-    }
-
-    private void setCurrentIndicator(int position) {
-        int childCount = layoutIndicator.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            ImageView imageView = (ImageView) layoutIndicator.getChildAt(i);
-            if (i == position) {
-                imageView.setImageDrawable(ContextCompat.getDrawable(
-                        this,
-                        R.drawable.bg_indicator_active
-                ));
-            } else {
-                imageView.setImageDrawable(ContextCompat.getDrawable(
-                        this,
-                        R.drawable.bg_indicator_inactive
-                ));
-            }
+            adapter.setOnItemClickListener(new MultiImageAdapter2.OnItemClickListener() {
+                @Override
+                public void onItemClick(int pos) {
+                    showdialogimg(pos);
+                }
+            });
         }
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         String uid = mAuth.getCurrentUser().getUid();
-
         if(userid.equals(uid)){                                             //자기가 쓴 게시글일경우 수정,삭제 메뉴 불러오기
             getMenuInflater().inflate (R.menu.mainoption, menu);
         }
@@ -307,16 +222,12 @@ public class CommunityActivity2 extends AppCompatActivity {
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                 return true;
             case R.id.option_delete:
-                //Toast.makeText(getApplicationContext(), "삭제", Toast.LENGTH_SHORT).show();
                 deleteDialog();
                 return true;
             case R.id.option_report:
                 showDialogreport();
-                //Toast.makeText(getApplicationContext(), "신고", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.option_rewrite:
-                //Log.d("LOGTEST", "postid : " + postid);
-                Toast.makeText(getApplicationContext(), "수정", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(CommunityActivity2.this, CommunityPostActivityRewrite.class);
                 intent.putExtra("postid", postid);
                 intent.putExtra("userid", userid);
@@ -330,13 +241,13 @@ public class CommunityActivity2 extends AppCompatActivity {
                 return super.onOptionsItemSelected (item);
         }
     }
-
     @Override
     protected void onStart() {
         super.onStart();
-
+        if(Mydata.getCount() >= array.length){
+            progressDialog.dismiss();
+        }
         mDatascomment = new ArrayList<>();
-
         mStore.collection(FirebaseID.post).document(firstpath).collection(secondpath).document(postid).collection(FirebaseID.comment)
                 .orderBy(FirebaseID.timestamp, Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -346,16 +257,11 @@ public class CommunityActivity2 extends AppCompatActivity {
                             mDatascomment.clear();
                             for (DocumentSnapshot snap : queryDocumentSnapshots.getDocuments()) {
                                 Map<String, Object> shot = snap.getData();
-                                //String nickname = String.valueOf((shot.get(FirebaseID.nickname)));
                                 String commentId = String.valueOf((shot.get(FirebaseID.commentId)));
                                 String userId = String.valueOf((shot.get(FirebaseID.userId)));
                                 String contents = String.valueOf(shot.get(FirebaseID.contents));
                                 String img = String.valueOf(shot.get(FirebaseID.img));
                                 String nickname = String.valueOf(shot.get(FirebaseID.nickname));
-                                //String time = String.valueOf(shot.get(clock()));
-                                //String time = String.valueOf(shot.get(FirebaseID.timestamp));
-                                //Date date = Date.valueOf(shot.get(FirebaseID.timestamp));
-                                //data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());
 
                                 PostCommunityComment data = new PostCommunityComment(userId, commentId, contents, img , nickname);
                                 mDatascomment.add(data);
@@ -374,20 +280,15 @@ public class CommunityActivity2 extends AppCompatActivity {
                                     commentdeleteDialog();
                                 }
                             });
-
                             mPostRecyclerView2.setAdapter(mAdaptercomment);
                         }
                     }
-
                 });
-
     }
 
-    void deleteDialog(){
+    void deleteDialog(){                                            //게시글 삭제 다이얼로그
         FirebaseUser user = mAuth.getInstance().getCurrentUser();
-        //String uid = user.getUid();
         String uid = mAuth.getCurrentUser().getUid();
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(CommunityActivity2.this)
                 .setTitle("삭제")
@@ -402,6 +303,19 @@ public class CommunityActivity2 extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if(userid.equals(uid)){
+                            StorageReference storageReference = firebaseStorage.getReference();
+                            if(!array[0].equals("null")){
+                                for (int o = 0; o < array.length; o++){
+                                String suri = array[o];
+                                StorageReference desertRef = storageReference.child(suri);
+                                desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+
+                                    }
+                                });
+                                }
+                            }
 
                             mStore.collection(FirebaseID.post).document(firstpath).collection(secondpath).document(postid).collection("comment").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() { //댓글 삭제 작업
                                 @Override
@@ -438,14 +352,7 @@ public class CommunityActivity2 extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-    void commentdeleteDialog(){
-        Intent intent = getIntent();
-        String postid = intent.getStringExtra("postid");
-        String firstpath = Mydata.getFirstpath();
-        String secondpath = Mydata.getSecondpath();
-
-        //FirebaseUser user = mAuth.getInstance().getCurrentUser();
-        //String uid = user.getUid();
+    void commentdeleteDialog(){                         //댓글 삭제 다이얼로그
         String uid = mAuth.getCurrentUser().getUid();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(CommunityActivity2.this)
@@ -481,14 +388,12 @@ public class CommunityActivity2 extends AppCompatActivity {
                         }
                     }
                 });
-
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
-    public void showDialogreport(){
+    public void showDialogreport(){                 //신고하는 다이얼로그
         dialogreport.show(); // 다이얼로그 띄우기
-
 
         Spinner reportspinner = dialogreport.findViewById(R.id.spinner_report);
 
@@ -504,19 +409,10 @@ public class CommunityActivity2 extends AppCompatActivity {
             }
         });
 
-        /* 이 함수 안에 원하는 디자인과 기능을 구현하면 된다. */
-
-        // 위젯 연결 방식은 각자 취향대로~
-        // '아래 아니오 버튼'처럼 일반적인 방법대로 연결하면 재사용에 용이하고,
-        // '아래 네 버튼'처럼 바로 연결하면 일회성으로 사용하기 편함.
-        // *주의할 점: findViewById()를 쓸 때는 -> 앞에 반드시 다이얼로그 이름을 붙여야 한다.
-
-        // 취소 버튼
         Button noBtn = dialogreport.findViewById(R.id.noBtn);
         noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 원하는 기능 구현
                 dialogreport.dismiss(); // 다이얼로그 닫기
                 Toast.makeText(CommunityActivity2.this, " 신고취소 ", Toast.LENGTH_SHORT).show();
             }
@@ -545,16 +441,59 @@ public class CommunityActivity2 extends AppCompatActivity {
                 data.put("3_3_경로3",secondpath);
                 data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());    //타임
 
-                //mStore.collection("report").document(firstpath).collection(secondpath).document(postId).set(data, SetOptions.merge());  //값넣기
                 mStore.collection("report").document(postId).set(data, SetOptions.merge());  //값넣기
                 Toast.makeText(CommunityActivity2.this, " 신고완료 ", Toast.LENGTH_SHORT).show();
                 dialogreport.dismiss(); // 다이얼로그 닫기
-                // 원하는 기능 구현
-                //finish();           // 앱 종료
             }
         });
     }
 
+    private ImageView imgdialog;
+    private PhotoViewAttacher mAttacher;    //이미지 확대하는 기능
+
+    void showdialogimg(int pos){
+        dialogimg.show(); // 다이얼로그 띄우기
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");             //파이어베이스 스토리지 경로지정
+        StorageReference storageRef = storage.getReference();
+        mAttacher = new PhotoViewAttacher(imgdialog);
+
+        storageRef.child(array[pos]).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                //이미지 로드 성공시
+                Glide.with(getApplicationContext())
+                        .load(uri)
+                        .into(imgdialog);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                //이미지 로드 실패시
+            }
+        });
+        dialogimg.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogimg.dismiss();
+            }
+        });
+    }
+
+    private void Loadingstart(){
+        Handler handler=new Handler();
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                progressDialog.show();
+
+                if(Mydata.getCount() >= array.length){
+                    progressDialog.dismiss();
+                }
+                else{
+                    Loadingstart();
+                }
+            }
+        },100);
+    }
 
     void getintent(){
         Intent intent = getIntent();
@@ -564,20 +503,16 @@ public class CommunityActivity2 extends AppCompatActivity {
         contents = intent.getStringExtra("contents");
         img = intent.getStringExtra("img");
         time = intent.getStringExtra("time");
-        firstpath = Mydata.getFirstpath();
-        secondpath = Mydata.getSecondpath();
+        firstpath = Mydata.getPostpath1();
+        secondpath = Mydata.getPostpath2();
         myemail = Mydata.getMyemail();
         myimg = Mydata.getMyprofile();
         mynickname = Mydata.getMynickname();
         myschool = Mydata.getMyschool();
-        Log.d("LOGTEST",  "img :  " + img);
 
         img = img.replace("[","");
         img = img.replace("]","");
         img = img.replaceAll(" ","");
         array = img.split(",");
-        for (int o = 0; o < array.length; o++){
-            Log.d("LOGTEST", "array : " + array[o]);
-        }
     }
 }

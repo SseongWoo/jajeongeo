@@ -5,8 +5,11 @@ import static com.example.csappjava.LoginActivity.context2;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,17 +25,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.csappjava.FirebaseID;
 import com.example.csappjava.LoginActivity;
 import com.example.csappjava.Mydata;
+import com.example.csappjava.ProgressDialog;
 import com.example.csappjava.R;
 import com.example.csappjava.models.UserProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MySetting_profile extends AppCompatActivity {
 
@@ -41,6 +52,8 @@ public class MySetting_profile extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
     private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+    private FirebaseFirestore mStore = FirebaseFirestore.getInstance();
+    ProgressDialog progressDialog;
 
     private String userUid,sch,times;
     Uri imgUri;
@@ -49,6 +62,10 @@ public class MySetting_profile extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mysetting_profile);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.setCancelable(false);
 
         sch = Mydata.getMyschool();
         userUid = mAuth.getCurrentUser().getUid();
@@ -92,6 +109,7 @@ public class MySetting_profile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(imgUri!=null){
+                    progressDialog.show();
                     uploadImage(imgUri);
                 }
             }
@@ -130,7 +148,12 @@ public class MySetting_profile extends AppCompatActivity {
                     @Override
                     public void onSuccess(Uri uri) {
                         reference.child(sch+"/user").child(userUid).child("profile").setValue("profile/profile"+userUid+times+".png");
+                        Map<String, Object> data = new HashMap<>();
+                        data.put(FirebaseID.img, uri.toString());                          //문서id
+                        mStore.collection(FirebaseID.user).document(mAuth.getCurrentUser().getUid()).set(data, SetOptions.merge());
+                        Log.d("LOGTEST",  "테스트 : " + uri + ", " + "profile/profile"+userUid+times+".png");
                         Toast.makeText(MySetting_profile.this,"변경 완료",Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
                         finish();
                     }
                 });

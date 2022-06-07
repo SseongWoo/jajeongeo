@@ -23,7 +23,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
-public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapterCommunityComment.PostViewHolder> {
+public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapterCommunityComment.PostViewHolder> {         //커뮤니티 댓글 어뎁터
 
     private List<PostCommunityComment> datas;
 
@@ -46,7 +46,6 @@ public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapte
         holder.nickname.setText(data.getNickname());
         holder.contents.setText(data.getContents());
 
-
         storageRef.child(data.getImg()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -54,7 +53,6 @@ public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapte
                 Glide.with(holder.imgView.getContext())
                         .load(uri)
                         .into(holder.imgView);
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -78,7 +76,6 @@ public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapte
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
     }
-
 
     public interface OnLongItemClickListener {
         void onLongItemClick(int pos);
@@ -109,10 +106,8 @@ public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapte
                     if (position != RecyclerView.NO_POSITION) {
                         if (onItemClickListener != null) {
                             onItemClickListener.onItemClick(position);
-
                         }
                     }
-
                 }
             });
 
@@ -129,10 +124,6 @@ public class PostAdapterCommunityComment extends RecyclerView.Adapter<PostAdapte
                     return false;
                 }
             });
-
-
         }
-
     }
-
 }

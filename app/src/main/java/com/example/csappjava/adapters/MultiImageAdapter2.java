@@ -1,6 +1,8 @@
 package com.example.csappjava.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.csappjava.Mydata;
+import com.example.csappjava.ProgressDialog;
 import com.example.csappjava.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -20,7 +24,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-public class MultiImageAdapter2 extends RecyclerView.Adapter<MultiImageAdapter2.ViewHolder>{
+public class MultiImageAdapter2 extends RecyclerView.Adapter<MultiImageAdapter2.ViewHolder>{                //커뮤니티 사진 어뎁터2
     private ArrayList<Uri> mData = null ;
     private Context mContext = null ;
     FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");             //파이어베이스 스토리지 경로지정
@@ -39,7 +43,6 @@ public class MultiImageAdapter2 extends RecyclerView.Adapter<MultiImageAdapter2.
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-
             image = itemView.findViewById(R.id.image2);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -56,8 +59,6 @@ public class MultiImageAdapter2 extends RecyclerView.Adapter<MultiImageAdapter2.
         }
 
     }
-
-
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     // LayoutInflater - XML에 정의된 Resource(자원) 들을 View의 형태로 반환.
     @Override
@@ -66,7 +67,6 @@ public class MultiImageAdapter2 extends RecyclerView.Adapter<MultiImageAdapter2.
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) ;    // context에서 LayoutInflater 객체를 얻는다.
         View view = inflater.inflate(R.layout.multi_image_item2, parent, false) ;	// 리사이클러뷰에 들어갈 아이템뷰의 레이아웃을 inflate.
         MultiImageAdapter2.ViewHolder vh = new MultiImageAdapter2.ViewHolder(view) ;
-
         return vh ;
     }
 
@@ -84,8 +84,7 @@ public class MultiImageAdapter2 extends RecyclerView.Adapter<MultiImageAdapter2.
                         .load(uri)
                         .into(holder.image);
 
-                //Log.d("LOGTEST", "어댑터 : " + image_uri);
-
+                Mydata.setCount(Mydata.getCount()+1);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

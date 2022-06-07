@@ -27,7 +27,6 @@ public class MultiImageActivity extends AppCompatActivity {
     RecyclerView recyclerView;  // 이미지를 보여줄 리사이클러뷰
     private MultiImageAdapter adapter; // 리사이클러뷰에 적용시킬 어댑터
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +44,9 @@ public class MultiImageActivity extends AppCompatActivity {
                 startActivityForResult(intent, 2222);
             }
         });
-
         recyclerView = findViewById(R.id.recyclerView);
     }
 
-    // 앨범에서 액티비티로 돌아온 후 실행되는 메서드
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -81,12 +78,10 @@ public class MultiImageActivity extends AppCompatActivity {
                         Uri imageUri = clipData.getItemAt(i).getUri();  // 선택한 이미지들의 uri를 가져온다.
                         try {
                             uriList.add(imageUri);  //uri를 list에 담는다.
-
                         } catch (Exception e) {
                             Log.e(TAG, "File select error", e);
                         }
                     }
-
                     adapter = new MultiImageAdapter(uriList, getApplicationContext());
                     recyclerView.setAdapter(adapter);   // 리사이클러뷰에 어댑터 세팅
                     recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));     // 리사이클러뷰 수평 스크롤 적용

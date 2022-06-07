@@ -25,7 +25,7 @@ public class BookApiActivity extends AppCompatActivity {
     TextView tv1,tv2,tv3;
     Button bt1;
     String result;
-    public String b1,b2,b3;
+    public String b1,b2,b3,b4,b5,b6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +50,14 @@ public class BookApiActivity extends AppCompatActivity {
 
                             TextView searchResult2 = (TextView) findViewById(R.id.tv1);
                             searchResult2.setText(str);
-                            //Log.d("LOGBOOKTEST3",  "b1 : " + b1 + " b2 : " + b2 + " b3 : " + b3);
 
                             Intent intent = new Intent(BookApiActivity.this, MarketplacePostActivity.class);
                             intent.putExtra("b1", b1);
                             intent.putExtra("b2", b2);
                             intent.putExtra("b3", b3);
+                            intent.putExtra("b4", b4);
+                            intent.putExtra("b5", b5);
+                            intent.putExtra("b6", b6);
                             startActivity(intent);
                         }
                     });
@@ -71,13 +73,12 @@ public class BookApiActivity extends AppCompatActivity {
         String clientID = "c3ayYRBzgCA6JrnacZoA";
         String clientSecret = "nSjcZhnIfz";
         StringBuffer sb = new StringBuffer();
-        String booktitle, bookprice, bookcontent,publisher, image;
+        String booktitle, bookprice, bookcontent,publisher, image, author, link;
 
         try {
             String text = URLEncoder.encode(keyword, "UTF-8");
 
             String apiURL = "https://openapi.naver.com/v1/search/book.xml?query=" + text + "&display=10" + "&start=1";
-
 
             URL url = new URL(apiURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -126,9 +127,18 @@ public class BookApiActivity extends AppCompatActivity {
                         }
                         else if (tag.equals("image")) {
                             xpp.next();
-
                             image = xpp.getText().replaceAll("<(/)?([a-zA-Z]*)(\\\\s[a-zA-Z]*=[^>]*)?(\\\\s)*(/)?>", "");
-                            Log.d("LOGBOOKTEST5",  "출판사정보 : " + image);
+                            bimg(image);
+                        }
+                        else if (tag.equals("author")) {
+                            xpp.next();
+                            author = xpp.getText().replaceAll("<(/)?([a-zA-Z]*)(\\\\s[a-zA-Z]*=[^>]*)?(\\\\s)*(/)?>", "");
+                            bauthor(author);
+                        }
+                        else if (tag.equals("link")) {
+                            xpp.next();
+                            link = xpp.getText().replaceAll("<(/)?([a-zA-Z]*)(\\\\s[a-zA-Z]*=[^>]*)?(\\\\s)*(/)?>", "");
+                            blink(link);
                         }
                         break;
                 }
@@ -148,5 +158,14 @@ public class BookApiActivity extends AppCompatActivity {
     }
     void bpublisher(String p){
         b3 = p;
+    }
+    void bimg(String i){
+        b4 = i;
+    }
+    void bauthor(String a){
+        b5 = a;
+    }
+    void blink(String l){
+        b6 = l;
     }
 }

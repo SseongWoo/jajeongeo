@@ -4,18 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,19 +27,16 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.csappjava.Chatting.ChatMainActivity;
 import com.example.csappjava.FirebaseID;
-import com.example.csappjava.Login.RegisterActivity3;
 import com.example.csappjava.MainActivity;
+import com.example.csappjava.Mappoint;
 import com.example.csappjava.Marketplace.MarketplaceActivity;
 import com.example.csappjava.Mydata;
 import com.example.csappjava.R;
-import com.example.csappjava.Marketplace.BookApiActivity;
-import com.example.csappjava.Marketplace.BarcoadActivity;
 import com.example.csappjava.Setting.SettingMain;
-import com.example.csappjava.Test1;
 import com.example.csappjava.adapters.PostAdapterCommunity;
-import com.example.csappjava.image.MultiImageActivity;
 import com.example.csappjava.models.DateConverter;
 import com.example.csappjava.models.PostCommunity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,7 +44,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -59,15 +52,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CommunityActivity extends AppCompatActivity implements View.OnClickListener {
+public class CommunityActivity extends AppCompatActivity implements View.OnClickListener {              //커뮤니티 메인화면 클래스
 
     private FirebaseFirestore mStore = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -76,13 +67,14 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
 
     private PostAdapterCommunity mAdapter;
     private List<PostCommunity> mDatas;
-    TextView nicknametv, pointtv, schooltv;
+    TextView nicknametv, schooltv;
     ImageButton searchbt, searchbt2;
     EditText searchet;
     Spinner searchsp;
     int number, count;
     String menumyschool,menumycampus,menumydepartment,menumyaffiliation, spitem;
     Timer timer;
+    ImageView profile;
 
 
     @Override
@@ -95,10 +87,6 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         findViewById(R.id.community_post_editbt).setOnClickListener(this);
         final DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
 
-
-        //final Mydata mdata = (Mydata)getApplication();
-        //mdata.Init();
-
         String uid = mAuth.getCurrentUser().getUid();                                   //자신의 정보 불러오기
         DocumentReference docRef = mStore.collection(FirebaseID.user).document(uid);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -107,23 +95,10 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        /*myemail = document.getData().get("email").toString();
-                        myimg = document.getData().get("img").toString();
-                        mynickname = document.getData().get("nickname").toString();
-                        mypoint = document.getData().get("point").toString();
-                        myschool = document.getData().get("school").toString();
-                        myschoolkr = document.getData().get("schoolKR").toString();
-                        mycampus = document.getData().get("campus").toString();
-                        mydepartment = document.getData().get("department").toString();
-                        myaffiliation = document.getData().get("affiliation").toString();*/
-
-                        //Log.d("LOGTEST",  "테스트 : " + Mydata.getMycampus());
-
                         String postcampus = document.getData().get("campus").toString();
                         String postschool = document.getData().get("school").toString();
                         String postschoolkr = document.getData().get("schoolKR").toString();
                         menudata(Mydata.getMyschool(), Mydata.getMycampus(), Mydata.getMydepartment(), Mydata.getMyaffiliation());
-
 
                         if(postcampus.equals("본교")){
                             Mydata.setFirstpath(postschool);
@@ -136,13 +111,8 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
                         postlist(Mydata.getFirstpath(),Mydata.getSecondpath(),"","");
                         number = 0;
 
-                        //Log.d("LOGTEST",  myaffiliation);
-
                         nicknametv.setText(Mydata.getMynickname());                                     //아이템 택스트 바꾸기
-                        //pointtv.setText();
                         schooltv.setText(Mydata.getMyschoolkr());
-
-                        //Toast.makeText(CommunityActivity.this, document.getData().get("nickname") + ";", Toast.LENGTH_SHORT).show();
                     } else {
 
                     }
@@ -169,7 +139,7 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
 
         View headerView = navigationView.getHeaderView(0);              //네비게이션 헤더 호출
         nicknametv = headerView.findViewById(R.id.nicknametv);              //네비게이션 헤더에 있는 아이템들 호출
-        pointtv = headerView.findViewById(R.id.pointtv);
+        profile = headerView.findViewById(R.id.profile);              //네비게이션 헤더에 있는 아이템들 호출
         schooltv = headerView.findViewById(R.id.schooltv);
 
         searchsp = findViewById(R.id.community_search_spinner);
@@ -182,6 +152,11 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         searchbt.setVisibility(View.GONE);
         searchbt2.setVisibility(View.GONE);
         searchet.setVisibility(View.GONE);
+
+        Glide.with(getApplicationContext())
+                .load(Mydata.getMyprofile())
+                .error(R.drawable.ic_noimage)
+                .into(profile);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {    //네비게이션 메뉴 누를때 발생하는 이벤트
             @Override
@@ -347,6 +322,7 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
         }
         item2.setTitle(Mydata.getMydepartment() + " 커뮤니티");
         item3.setTitle(Mydata.getMyaffiliation() + " 커뮤니티");
+        //menu.add(Menu.NONE,Menu.FIRST,Menu.NONE,"테스트");
 
         return super.onCreateOptionsMenu(menu);
 
@@ -410,6 +386,11 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
                 }
                 return true;
 
+            case Menu.FIRST:
+                Intent intent = new Intent(CommunityActivity.this, Mappoint.class);
+                startActivity(intent);
+                return true;
+
             /*case R.id.option_community4:
                 Intent intent = new Intent(CommunityActivity.this, MultiImageActivity.class);
                 startActivity(intent);
@@ -428,8 +409,6 @@ public class CommunityActivity extends AppCompatActivity implements View.OnClick
                     searchbt2.setVisibility(View.GONE);
                     searchet.setVisibility(View.GONE);
                 }
-
-
 
             default:
                 return super.onOptionsItemSelected(item);

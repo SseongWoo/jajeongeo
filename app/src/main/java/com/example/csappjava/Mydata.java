@@ -15,6 +15,11 @@ public class Mydata extends Application {
     private static String mydepartment;
     private static String postpath1;
     private static String postpath2;
+    private static String send;
+    private static String nearschool;
+    private static String nearschoolkr;
+
+    private static int count;
 
     @Override
     public void onCreate() {
@@ -31,6 +36,9 @@ public class Mydata extends Application {
         mydepartment = "";
         postpath1 = "";
         postpath2 = "";
+        send = "";
+        nearschool = "";
+        nearschoolkr = "";
     }
 
     public void Init(){
@@ -46,6 +54,9 @@ public class Mydata extends Application {
         mydepartment = "";
         postpath1 = "";
         postpath2 = "";
+        send = "";
+        nearschool = "";
+        nearschoolkr ="";
     }
 
     public static String getFirstpath() {
@@ -142,5 +153,37 @@ public class Mydata extends Application {
 
     public static void setPostpath2(String postpath2) {
         Mydata.postpath2 = postpath2;
+    }
+
+    public static int getCount() {
+        return count;
+    }
+
+    public static void setCount(int count) {
+        Mydata.count = count;
+    }
+
+    public static String getSend() {
+        return send;
+    }
+
+    public static void setSend(String send) {
+        Mydata.send = send;
+    }
+
+    public static String getNearschool() {
+        return nearschool;
+    }
+
+    public static void setNearschool(String nearschool) {
+        Mydata.nearschool = nearschool;
+    }
+
+    public static String getNearschoolkr() {
+        return nearschoolkr;
+    }
+
+    public static void setNearschoolkr(String nearschoolkr) {
+        Mydata.nearschoolkr = nearschoolkr;
     }
 }

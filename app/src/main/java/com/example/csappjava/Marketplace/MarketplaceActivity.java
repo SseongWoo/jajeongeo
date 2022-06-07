@@ -2,6 +2,7 @@ package com.example.csappjava.Marketplace;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.csappjava.Chatting.ChatMainActivity;
 import com.example.csappjava.Community.CommunityActivity;
 import com.example.csappjava.Community.CommunityActivity2;
@@ -62,8 +64,9 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
 
     private RecyclerView mPostRecyclerView;
     private GridLayoutManager layoutManager;
-    TextView nicknametv, pointtv, schooltv;
-
+    TextView nicknametv, schooltv;
+    private String[] array;
+    private String[] array2, array3;
     private String firstpath, secondpath;
     private PostAdapterMarketplace mAdapter;
     private List<PostMarketplace> mDataM;
@@ -72,6 +75,8 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
     EditText searchet;
     Spinner searchsp;
     int number = 0;
+    int number2 = 0;
+    ImageView profile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,11 +114,11 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
         navigationView.setItemIconTintList(null);
 
         String mynickname = Mydata.getMynickname();
-        String myschool = Mydata.getMyschool();
+        String myschool = Mydata.getMyschoolkr();
         View headerView = navigationView.getHeaderView(0);              //네비게이션 헤더 호출
         nicknametv = headerView.findViewById(R.id.nicknametv);              //네비게이션 헤더에 있는 아이템들 호출
-        pointtv = headerView.findViewById(R.id.pointtv);
         schooltv = headerView.findViewById(R.id.schooltv);
+        profile = headerView.findViewById(R.id.profile);
 
         nicknametv.setText(mynickname);                                     //아이템 택스트 바꾸기
         schooltv.setText(myschool);
@@ -127,6 +132,15 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
         searchbt.setVisibility(View.GONE);
         searchbt2.setVisibility(View.GONE);
         searchet.setVisibility(View.GONE);
+
+        Glide.with(getApplicationContext())
+                .load(Mydata.getMyprofile())
+                .error(R.drawable.ic_noimage)
+                .into(profile);
+
+        if(!Mydata.getNearschoolkr().equals("")){
+            array3 = Mydata.getNearschoolkr().split(",");
+        }
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {    //네비게이션 메뉴 누를때 발생하는 이벤트
             @Override
@@ -224,8 +238,18 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onClick(View view){                                                 //작성페이지 가는 이벤트
-        Intent intentpost = new Intent(this, BarcoadActivity.class);
-        startActivity(intentpost);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.getTitle();
+
+        if(number2 == 0){
+            Intent intentpost = new Intent(this, BarcoadActivity.class);
+            startActivity(intentpost);
+        }
+        else{
+            Intent intentpost2 = new Intent(this, MarketplacePostActivity2.class);
+            startActivity(intentpost2);
+        }
+
     }
 
     public String clock(){
@@ -239,11 +263,18 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.option_market_menu,menu);
+        menu.add(Menu.NONE,Menu.FIRST+10,Menu.NONE,"책 중고장터");
+        menu.add(Menu.NONE,Menu.FIRST+20,Menu.NONE,"기타 중고장터");
+        menu.add(Menu.NONE,Menu.FIRST+30,Menu.NONE,"내가 올린 게시물");
+        if(!Mydata.getNearschool().equals("")){
+            array2 = Mydata.getNearschool().split(",");
+            for (int o = 0; o < array.length; o++){
+                menu.add(Menu.NONE,Menu.FIRST+40+o,Menu.NONE, array[o] + " 중고장터");
+            }
+        }
         return super.onCreateOptionsMenu(menu);
     }
-    //앱바(App Bar)에 표시된 액션 또는 오버플로우 메뉴가 선택되면
-    //액티비티의 onOptionsItemSelected() 메서드가 호출
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -252,13 +283,29 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
                 Intent intent = new Intent(MarketplaceActivity.this,CommunityActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                number2 = 0;
                 finish();
                 return true;
-            case R.id.option_delete:
-                Toast.makeText(getApplicationContext(), "삭제", Toast.LENGTH_SHORT).show();
+            case Menu.FIRST+10:
+                postlist(firstpath, secondpath, "", "");
+                number2 = 0;
                 return true;
-            case R.id.option_report:
-                Toast.makeText(getApplicationContext(), "신고", Toast.LENGTH_SHORT).show();
+            case Menu.FIRST+20:
+                postlist(firstpath, secondpath+"기타", "", "");
+                number2 = 1;
+                return true;
+            case Menu.FIRST+30:
+                postlist(firstpath, secondpath, "내닉네임", Mydata.getMynickname() );
+                number2 = 0;
+                Toast.makeText(getApplicationContext(), "내가 올린 게시물", Toast.LENGTH_SHORT).show();
+                return true;
+            case Menu.FIRST+40:
+                number2 = 0;
+                postlist(array2[0], array3[0], "", "");
+                return true;
+            case Menu.FIRST+41:
+                number2 = 0;
+                postlist(array2[1], array3[1], "", "");
                 return true;
             case R.id.item1:
                 if(searchsp.getVisibility() == View.GONE){
@@ -297,45 +344,60 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
                                 String price = String.valueOf(shot.get(FirebaseID.price));
                                 String nick = String.valueOf(shot.get(FirebaseID.nickname));
                                 String transaction = String.valueOf(shot.get(FirebaseID.transaction));
+                                String lecture = String.valueOf(shot.get("강의정보_강의명"));
+                                String professor = String.valueOf(shot.get("강의정보_교수명"));
+                                String department = String.valueOf(shot.get("강의정보_학과명"));
+                                String adapteryear = String.valueOf(shot.get("강의정보_년도"));
+                                String adaptermonth = String.valueOf(shot.get("강의정보_학기"));
+                                String bookname = String.valueOf(shot.get("책정보_책이름"));
+                                String bookprice = String.valueOf(shot.get("책정보_책가격"));
+                                String bookpublisher = String.valueOf(shot.get("책정보_출판사"));
+                                String bookimg = String.valueOf(shot.get("책정보_이미지"));
+                                String author = String.valueOf(shot.get("책정보_저자"));
+                                String booklink = String.valueOf(shot.get("책정보_링크"));
+
                                 String time = new String();
                                 try {
                                     time = DateConverter.formatTimeString(((Timestamp) shot.get(FirebaseID.timestamp)).toDate().getTime());
                                 } catch (Exception e) {
                                     Log.d("LOGTEST",  "오류오류" + title);
                                 }
-                                Log.d("LOGTEST",  "여기?" + time);
-                                //String time = String.valueOf(shot.get(clock()));
-                                //String time = String.valueOf(shot.get(FirebaseID.timestamp));
-                                //Date date = Date.valueOf(shot.get(FirebaseID.timestamp));
-                                //data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());
 
-                                Log.d("MARKET",  "SP : " + sp + " SEARCH : " + search );
-
-                                if(sp.equals("")&&search.equals("")){
-                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction);
+                                if(sp.equals("")&&search.equals("")){                   //검색할 데이터를 구분하는 작업
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
                                     mDataM.add(data);
                                 }
-                                else if(sp.equals("닉네임")&&nick.contains(search)){
-                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction);
-                                    mDataM.add(data);
-                                }
-                                else if(sp.equals("책명")&&contents.contains(search)){
-                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction);
+                                else if(sp.equals("책명")&&bookname.contains(search)){
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
                                     mDataM.add(data);
                                 }
                                 else if(sp.equals("제목")&&title.contains(search)){
-                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction);
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
                                     mDataM.add(data);
                                 }
-                                else if(sp.equals("교수명")&&title.contains(search)){
-                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction);
+                                else if(sp.equals("교수명")&&professor.contains(search)){
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
                                     mDataM.add(data);
                                 }
-                                else if(sp.equals("수업명")&&title.contains(search)){
-                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction);
+                                else if(sp.equals("수업명")&&lecture.contains(search)){
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
                                     mDataM.add(data);
                                 }
-
+                                else if(sp.equals("학과")&&department.contains(search)){
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
+                                    mDataM.add(data);
+                                }
+                                else if(sp.equals("내닉네임")&&nick.contains(search)){
+                                    PostMarketplace data = new PostMarketplace(postId, userId, title, contents, img, price, nick, time, transaction,
+                                            lecture, professor, department, adapteryear, adaptermonth, bookname,bookprice, bookpublisher, bookimg, author, booklink);
+                                    mDataM.add(data);
+                                }
                             }
                             mAdapter = new PostAdapterMarketplace(mDataM);
 
@@ -356,20 +418,58 @@ public class MarketplaceActivity extends AppCompatActivity implements View.OnCli
                                     String hmtime = hm.getTime();
                                     String hmprice = hm.getPrice();
                                     String hmtransaction = hm.getTransaction();
+                                    String hmlecture = hm.getLecture();
+                                    String hmprofessor = hm.getProfessor();
+                                    String hmdepartment = hm.getDepartment();
+                                    String hmadapteryear = hm.getAdapteryear();
+                                    String hmadaptermonth = hm.getAdaptermonth();
+                                    String hmbookname = hm.getBookname();
+                                    String hmbookprice = hm.getBookprice();
+                                    String hmbookpublisher = hm.getBookpublisher();
+                                    String hmbookimg = hm.getBookimg();
+                                    String hmauthor = hm.getAuthor();
+                                    String hmbooklink = hm.getBooklink();
 
-                                    Intent intent = new Intent(MarketplaceActivity.this, MarketplaceActivity2.class);
-                                    intent.putExtra("postid",hmpostid);
-                                    intent.putExtra("userid",hmuserid);
-                                    intent.putExtra("title",hmtitle);
-                                    intent.putExtra("contents",hmcontents);
-                                    intent.putExtra("img",hmimg);
-                                    intent.putExtra("time",hmtime);
-                                    intent.putExtra("price",hmprice);
-                                    intent.putExtra("transaction",hmtransaction);
+                                    if(number2 == 1) {
+                                        Intent intent2 = new Intent(MarketplaceActivity.this, MarketplaceActivity2_1.class);
+                                        intent2.putExtra("postid",hmpostid);
+                                        intent2.putExtra("userid",hmuserid);
+                                        intent2.putExtra("title",hmtitle);
+                                        intent2.putExtra("contents",hmcontents);
+                                        intent2.putExtra("img",hmimg);
+                                        intent2.putExtra("time",hmtime);
+                                        intent2.putExtra("price",hmprice);
+                                        intent2.putExtra("transaction",hmtransaction);
+                                        startActivity(intent2);
+                                        overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+                                    }
+                                    else{
+                                        Intent intent = new Intent(MarketplaceActivity.this, MarketplaceActivity2.class);
+                                        intent.putExtra("postid",hmpostid);
+                                        intent.putExtra("userid",hmuserid);
+                                        intent.putExtra("title",hmtitle);
+                                        intent.putExtra("contents",hmcontents);
+                                        intent.putExtra("img",hmimg);
+                                        intent.putExtra("time",hmtime);
+                                        intent.putExtra("price",hmprice);
+                                        intent.putExtra("transaction",hmtransaction);
+                                        intent.putExtra("lecture",hmlecture);
+                                        intent.putExtra("professor",hmprofessor);
+                                        intent.putExtra("department",hmdepartment);
+                                        intent.putExtra("adapteryear",hmadapteryear);
+                                        intent.putExtra("adaptermonth",hmadaptermonth);
+                                        intent.putExtra("bookname",hmbookname);
+                                        intent.putExtra("bookpublisher",hmbookpublisher);
+                                        intent.putExtra("bookimg",hmbookimg);
+                                        intent.putExtra("author",hmauthor);
+                                        intent.putExtra("booklink",hmbooklink);
+                                        intent.putExtra("bookprice",hmbookprice);
 
-                                    startActivity(intent);
-                                    overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+                                        Log.d("LOGTEST",  "IMG : " + hm.getImg() );
 
+                                        startActivity(intent);
+                                        overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+                                    }
                                     //Toast.makeText(getApplicationContext(), hm.getContents() + "," + hm.getTitle(), Toast.LENGTH_SHORT).show();
                                 }
                             });

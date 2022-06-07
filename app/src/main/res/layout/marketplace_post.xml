@@ -15,9 +15,11 @@
             <ImageView
                 android:id="@+id/marketplace_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:layout_margin="10dp"
+                android:layout_height="150dp"
+                android:src="@drawable/ic_noimage"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:layout_gravity="center"
                 android:transitionName="imgTransition"/>
 
@@ -28,45 +30,35 @@
                 android:textSize="24dp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:layout_margin="8dp"
+                android:layout_marginLeft="8dp"
                 android:singleLine="true"
-                tools:text="title"/>
+                tools:text="title"
+                android:includeFontPadding="false"
+                android:ems="5"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
-                android:id="@+id/item_post_contents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:textSize="16dp"
-                android:textColor="@android:color/holo_blue_light"
-                android:singleLine="true"
-                tools:text="Contents"/>
-
-            <LinearLayout
+                android:id="@+id/market_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/market_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:text="price"
-                    android:gravity="right"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:layout_margin="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginRight="10dp"
+                android:ellipsize="end"
+                android:ems="5"
+                android:gravity="right"
+                android:maxLines="1"
+                android:text="price"
+                android:textColor="@color/black"
+                android:textSize="20dp"
+                android:includeFontPadding="false"
+                android:textStyle="bold" />
 
-            </LinearLayout>
             <TextView
                 android:id="@+id/item_post_mtime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:layout_margin="8dp"
+                android:layout_marginRight="8dp"
                 android:textSize="12dp"
                 android:textColor="@android:color/black"
                 android:singleLine="true"

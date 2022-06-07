@@ -5,6 +5,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.csappjava.Community.CommunityActivity;
 import com.example.csappjava.MainActivity;
 import com.example.csappjava.Marketplace.MarketplaceActivity;
@@ -36,7 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatMainActivity extends AppCompatActivity {
+public class ChatMainActivity extends AppCompatActivity {                   //채팅방 목록이 나오는 클래스
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseDatabase firebaseDatabase;
@@ -46,12 +49,13 @@ public class ChatMainActivity extends AppCompatActivity {
     RecyclerView userList;
     ChatAdapter userAdapter;
     String sch;
+    TextView nicknametv,schooltv;
+    ImageView profile;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatmain);
@@ -71,6 +75,20 @@ public class ChatMainActivity extends AppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.navigationView);
         navigationView.setItemIconTintList(null);
+
+        String mynickname = Mydata.getMynickname();
+        String myschool = Mydata.getMyschoolkr();
+        View headerView = navigationView.getHeaderView(0);              //네비게이션 헤더 호출
+        nicknametv = headerView.findViewById(R.id.nicknametv);              //네비게이션 헤더에 있는 아이템들 호출
+        schooltv = headerView.findViewById(R.id.schooltv);
+        profile = headerView.findViewById(R.id.profile);
+
+        nicknametv.setText(mynickname);                                     //아이템 택스트 바꾸기
+        schooltv.setText(myschool);
+        Glide.with(getApplicationContext())                     //프로필 얻어오는 작업
+                .load(Mydata.getMyprofile())
+                .error(R.drawable.ic_noimage)
+                .into(profile);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {    //네비게이션 메뉴 누를때 발생하는 이벤트
             @Override

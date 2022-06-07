@@ -1,37 +1,43 @@
 package com.example.csappjava.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.csappjava.R;
-import com.example.csappjava.models.PostCommunity;
+import com.example.csappjava.models.PostMarketplaceSearch;
+
 import java.util.List;
 
-public class PostAdapterCommunity extends RecyclerView.Adapter<PostAdapterCommunity.PostViewHolder> {           //커뮤니티 게시글 어뎁터
+public class PostAdapterMarketplacesearch extends RecyclerView.Adapter<PostAdapterMarketplacesearch.PostViewHolder> {           //중고거래 게시글 작성중 수업 데이터 검색 어뎁터
 
-    private List<PostCommunity> datas;
+    private List<PostMarketplaceSearch> datas;
 
-    public PostAdapterCommunity(List<PostCommunity> datas) {
+    public PostAdapterMarketplacesearch(List<PostMarketplaceSearch> datas) {
         this.datas = datas;
     }
 
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new PostViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.community_post, parent, false));
+        return new PostViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.marketplace_post_search, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
-        PostCommunity data = datas.get(position);
-        holder.title.setText(data.getTitle());
-        holder.contents.setText(data.getContents());
-        holder.nickname.setText(data.getNick());
-        holder.time.setText(data.getTime());
+        PostMarketplaceSearch data = datas.get(position);
+        holder.professor.setText(data.getProfessor());
+        holder.lecture.setText(data.getLecture());
+        holder.department.setText(data.getDepartment());
+        holder.year.setText(data.getYear());
+        holder.month.setText(data.getMonth());
+        Log.d("LOGTEST", "어댑터");
     }
 
     @Override
@@ -62,16 +68,15 @@ public class PostAdapterCommunity extends RecyclerView.Adapter<PostAdapterCommun
 
 
     class PostViewHolder extends RecyclerView.ViewHolder{
-        private TextView title, contents, nickname, time;
-        private ImageView imgView;
+        private TextView professor, lecture, department, year, month;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            title = itemView.findViewById(R.id.item_post_title);
-            contents = itemView.findViewById(R.id.item_post_contents);
-            nickname = itemView.findViewById(R.id.item_post_nickname);
-            time = itemView.findViewById(R.id.item_post_time);
+            professor = itemView.findViewById(R.id.item_post_professor);
+            lecture = itemView.findViewById(R.id.item_post_lecture);
+            department = itemView.findViewById(R.id.item_post_department);
+            year = itemView.findViewById(R.id.item_post_year);
+            month = itemView.findViewById(R.id.item_post_month);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

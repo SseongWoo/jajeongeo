@@ -71,8 +71,6 @@ public class ChatActivity_2 extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference();
 
-        Log.d("LOGTEST", "sch : " + sch);
-
         reference.child("cs").child(sch).child("user").child(otherName).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

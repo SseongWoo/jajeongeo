@@ -12,13 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.csappjava.Mydata;
 import com.example.csappjava.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.MyViewHolder> {
+public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.MyViewHolder> {             //중고장터 게시글 슬라이드 사진 어뎁터
     private Context context;
     private String[] sliderImage;
     FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");             //파이어베이스 스토리지 경로지정
@@ -47,6 +48,16 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
         return sliderImage.length;
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(int pos);
+    }
+
+    private ImageSliderAdapter.OnItemClickListener onItemClickListener = null;
+
+    public void setOnItemClickListener(ImageSliderAdapter.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mImageView;
@@ -54,6 +65,19 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.imageSlider);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        if (onItemClickListener != null) {
+                            onItemClickListener.onItemClick(position);
+
+                        }
+                    }
+                }
+            });
         }
 
         public void bindSliderImage(String imageURL) {
@@ -66,19 +90,20 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
             storageRef.child(imageURL).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
+                    Mydata.setCount(Mydata.getCount()+1);
                     //이미지 로드 성공시
                     Glide.with(context)
                             .load(uri)
                             .into(mImageView);
-                    //Log.d("LOGTEST", "이미지슬라이드어뎁터1 : " + imageURL);
-                    //Log.d("LOGTEST", "이미지슬라이드어뎁터2 : " + uri);
-                    //Log.d("LOGTEST", "어댑터 : " + image_uri);
+
+                    Log.d("LOGTEST",  "count : " + Mydata.getCount());
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     //이미지 로드 실패시
+                    Mydata.setCount(Mydata.getCount()+1);
                 }
             });
         }

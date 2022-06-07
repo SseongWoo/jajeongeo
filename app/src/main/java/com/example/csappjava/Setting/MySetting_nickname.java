@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,23 +22,45 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.csappjava.Community.CommunityActivity;
+import com.example.csappjava.Community.CommunityActivity2;
+import com.example.csappjava.FirebaseID;
 import com.example.csappjava.LoginActivity;
 import com.example.csappjava.Mydata;
 import com.example.csappjava.R;
+import com.example.csappjava.adapters.PostAdapterCommunity;
 import com.example.csappjava.models.ChatNicknameModel;
+import com.example.csappjava.models.DateConverter;
+import com.example.csappjava.models.PostCommunity;
 import com.example.csappjava.models.UserProfile;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MySetting_nickname extends AppCompatActivity {
 
+    private FirebaseFirestore mStore = FirebaseFirestore.getInstance();
     private DatabaseReference reference = FirebaseDatabase.getInstance().getReference("cs");
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
@@ -87,16 +110,7 @@ public class MySetting_nickname extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) { }
         });
 
-        // 유저 닉네임 가져오기기
-        reference.child(sch+"/user").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ChatNicknameModel chat_test = snapshot.getValue(ChatNicknameModel.class);
-                ednick.setText(chat_test.getNickNames());
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        });
+        ednick.setText(Mydata.getMynickname());
 
         btn_change.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,13 +121,16 @@ public class MySetting_nickname extends AppCompatActivity {
                 else if (ednick.getText().toString().length() > 6){
                     Toast.makeText(getApplicationContext(), "글자수가 많습니다 6글자 이하로 입력해 주세요", Toast.LENGTH_SHORT).show();
                 } else{
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(FirebaseID.nickname, ednick.getText().toString());           //닉네임
+                    Mydata.setMynickname(ednick.getText().toString());
+                    mStore.collection(FirebaseID.user).document(mAuth.getUid()).set(data, SetOptions.merge());  //값넣기
                     reference.child(sch + "/user").child(mAuth.getUid()).child("nickNames").setValue(ednick.getText().toString());         // 경로
                     finish();
                     Toast.makeText(getApplicationContext(), "닉네임 변경 완료.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
     }
 
 

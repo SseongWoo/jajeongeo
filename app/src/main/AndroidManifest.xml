@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".Mydata"
@@ -20,6 +22,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Csappjava"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="bqbfrtex9q" />
+
+        <activity
+            android:name=".Maptest"
+            android:exported="false" />
         <activity
             android:name=".image.MultiImageActivity"
             android:exported="false" />
@@ -44,7 +54,8 @@
         <activity
             android:name=".LoadingActivity"
             android:theme="@style/Theme.Csappjava3" />
-        <activity android:name=".Community.CommunityPostActivity" />
+        <activity android:name=".Community.CommunityPostActivity"
+            android:theme="@style/Theme.Csappjava"/>
         <activity android:name=".Login.RegisterActivity2" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".Community.CommunityActivity" />
@@ -53,22 +64,38 @@
         <activity
             android:name=".Marketplace.MarketplaceActivity"
             android:theme="@style/Theme.Csappjava2" />
-        <activity android:name=".Marketplace.MarketplacePostActivity" />
-        <activity android:name=".Marketplace.MarketplaceActivity2" />
+        <activity android:name=".Marketplace.MarketplacePostActivity"
+            android:theme="@style/Theme.Csappjava2"/>
+        <activity android:name=".Marketplace.MarketplaceActivity2"
+            android:theme="@style/Theme.Csappjava2"/>
         <activity android:name=".Login.FindpwdActivity" />
-        <activity android:name=".Chatting.ChatActivity" />
-        <activity android:name=".Chatting.ChatActivity_2" />
-        <activity android:name=".Chatting.ChatMainActivity" />
-        <activity android:name=".Community.CommunityPostActivityRewrite" />
-        <activity android:name=".Marketplace.MarketplacePostActivityRewrite" />
+        <activity android:name=".Chatting.ChatActivity"
+            android:theme="@style/Theme.Csappjava2"/>
+        <activity android:name=".Chatting.ChatActivity_2"
+            android:theme="@style/Theme.Csappjava2"/>
+        <activity android:name=".Chatting.ChatMainActivity"
+            android:theme="@style/Theme.Csappjava2"/>
+        <activity android:name=".Community.CommunityPostActivityRewrite"
+            android:theme="@style/Theme.Csappjava"/>
+        <activity android:name=".Marketplace.MarketplacePostActivityRewrite"
+            android:theme="@style/Theme.Csappjava2"/>
         <activity android:name=".Marketplace.BarcoadActivity" />
-        <activity android:name=".Setting.SettingMain" />
-        <activity android:name=".Setting.ModSetting" />
-        <activity android:name=".Setting.MySetting" />
-        <activity android:name=".Setting.MySetting_profile" />
-        <activity android:name=".Setting.MySetting_nickname" />
-        <activity android:name=".Test1" />
+        <activity android:name=".Setting.SettingMain"
+            android:theme="@style/Theme.Csappjava6"/>
+        <activity android:name=".Setting.ModSetting"
+            android:theme="@style/Theme.Csappjava6"/>
+        <activity android:name=".Setting.MySetting"
+            android:theme="@style/Theme.Csappjava6"/>
+        <activity android:name=".Setting.MySetting_profile"
+            android:theme="@style/Theme.Csappjava6"/>
+        <activity android:name=".Setting.MySetting_nickname"
+            android:theme="@style/Theme.Csappjava6"/>
         <activity android:name=".MainLoadingActivity" />
+        <activity android:name=".Mappoint" />
+        <activity android:name=".Marketplace.MarketplacePostActivity2"
+            android:theme="@style/Theme.Csappjava2"/>
+        <activity android:name=".Marketplace.MarketplaceActivity2_1"
+            android:theme="@style/Theme.Csappjava2"/>
     </application>
 
 </manifest>

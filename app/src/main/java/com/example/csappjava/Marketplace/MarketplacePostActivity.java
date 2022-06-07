@@ -1,10 +1,12 @@
 package com.example.csappjava.Marketplace;
 
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,19 +19,38 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.csappjava.Community.CommunityActivity;
+import com.example.csappjava.Community.CommunityActivity2;
+import com.example.csappjava.Community.CommunityPostActivity;
 import com.example.csappjava.FirebaseID;
 import com.example.csappjava.Mydata;
 import com.example.csappjava.R;
+import com.example.csappjava.adapters.MultiImageAdapter;
+import com.example.csappjava.adapters.PostAdapterCommunity;
+import com.example.csappjava.adapters.PostAdapterMarketplacesearch;
+import com.example.csappjava.models.DateConverter;
+import com.example.csappjava.models.PostCommunity;
+import com.example.csappjava.models.PostMarketplace;
+import com.example.csappjava.models.PostMarketplaceSearch;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,8 +58,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -56,17 +84,32 @@ public class MarketplacePostActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseFirestore mStore = FirebaseFirestore.getInstance();
+    private FirebaseFirestore mStore2 = FirebaseFirestore.getInstance();
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
     private DatabaseReference mDatabaseRef;     // 실시간 데이터베이스
     private DatabaseReference mDatabaseRef2;     // 실시간 데이터베이스
-    private EditText mTitle, mContents, mPrice;
+    private EditText mTitle, mContents, mPrice,bprice;
     private ImageView imageView;
     private String stringurl;
-    private TextView bname,bprice,bpublisher;
+    private int GALLERY_CODE = 10;
+    private List<String> imglist = new ArrayList<>();
+    private TextView bname,bpublisher;
+    private List<String> spinnerArray =  new ArrayList<String>();
+    int count = 0;
+    private Spinner sItems1, sItems2;
+    private PostAdapterMarketplacesearch mAdapter;
+    private List<PostMarketplaceSearch> mDatas;
+    private RecyclerView mPostRecyclerView;
 
     private DecimalFormat decimalFormat = new DecimalFormat("#,###");       //원화 단위 표시
     private String result="";
     Uri imgUri;
+
+    private static final String TAG = "MultiImageActivity";
+    ArrayList<Uri> uriList = new ArrayList<>();     // 이미지의 uri를 담을 ArrayList 객체
+
+    RecyclerView recyclerView;  // 이미지를 보여줄 리사이클러뷰
+    private MultiImageAdapter adapter; // 리사이클러뷰에 적용시킬 어댑터
 
     private List<String> list;          // 데이터를 넣은 리스트변수
     private Button searchbt;
@@ -79,10 +122,12 @@ public class MarketplacePostActivity extends AppCompatActivity {
 
     private Button addlesson;
     private TextView test1_1, test2_1, setlesson, setprofessor;
-    private EditText test1_2, test2_2;
+    private EditText test1_2, test2_2,dialog_search_tv;
 
     Dialog dialogsearch;    //검색
     Dialog dialogsearch2;    //검색
+
+    private String myschool, adapterlecture, adapterprofessor, adapterdepartment, adapteryear, adaptermonth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,15 +142,24 @@ public class MarketplacePostActivity extends AppCompatActivity {
         bname = findViewById(R.id.bookname);
         bpublisher = findViewById(R.id.bookpublisher);
         bprice = findViewById(R.id.bookprice);
+        bprice.addTextChangedListener(watcher2);
         setlesson = findViewById(R.id.lesson);
         setprofessor = findViewById(R.id.lesson2);
+        searchposttv = findViewById(R.id.post_searchtv);
+
+        mydata();
+
+
 
         Intent intent = getIntent();
         String firstpath = Mydata.getFirstpath();
         String secondpath = Mydata.getSecondpath();
-        String b1 = intent.getStringExtra("b1");
-        String b2 = intent.getStringExtra("b2");
-        String b3 = intent.getStringExtra("b3");
+        String b1 = intent.getStringExtra("b1");        //책가격
+        String b2 = intent.getStringExtra("b2");        //책이름
+        String b3 = intent.getStringExtra("b3");        //출판사
+        String b4 = intent.getStringExtra("b4");        //이미지
+        String b5 = intent.getStringExtra("b5");        //저자
+        String b6 = intent.getStringExtra("b6");        //링크
         bname.setText(b2);
         bprice.setText(b1);
         bpublisher.setText(b3);
@@ -134,16 +188,21 @@ public class MarketplacePostActivity extends AppCompatActivity {
         Window window2 = dialogsearch2.getWindow();
         window2.setAttributes(lp2);
 
-        Button imagebt = (Button) findViewById(R.id.market_post_image_button) ;
+        mPostRecyclerView = dialogsearch2.findViewById(R.id.list_search_recycleview);
+
+        Button imagebt = (Button) findViewById(R.id.market_post_image_button);
         imagebt.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent,10);
-                imageView.setEnabled(false);
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 2222);
             }
-        }) ;
+        });
+
+        recyclerView = findViewById(R.id.market_post_recyclerView);
 
         Button savebt = (Button) findViewById(R.id.market_post_save_button) ;
         savebt.setOnClickListener(new Button.OnClickListener() {
@@ -154,15 +213,22 @@ public class MarketplacePostActivity extends AppCompatActivity {
                     String filename= sdf.format(new Date())+ ".png";//현재 시간과 사용자 고유id로 파일명 지정
                     String user = mAuth.getCurrentUser().getUid().toString();
 
-                    if(imageView.isEnabled()) {     //이미지 없을 때
-                        stringurl = "null";
+                    String list = "";
+                    for (int o = 0; o < imglist.size(); o++){
+                        list = list + "," + imglist.get(o);
                     }
-                    else{       //이미지가 있을 때
-                        StorageReference imgRef= firebaseStorage.getReference("/images/marketplace/"+user+filename);
+                    String[] array = list.split(",");
 
-                        UploadTask uploadTask =imgRef.putFile(imgUri);
-                        //stringurl = imgRef.getDownloadUrl().toString();
-                        stringurl = "/images/marketplace/"+user+filename;
+                    for (int o = 0; o < imglist.size(); o++){
+                        Uri u;
+                        String su;
+
+                        su = imglist.get(o).toString();
+                        u = uriList.get(o);
+
+                        StorageReference imgRef = firebaseStorage.getReference(su);
+                        UploadTask uploadTask = imgRef.putFile(u);
+                        //Log.d("LOGTEST", "array : " + array[o]);
                     }
 
                     String postId = mStore.collection(FirebaseID.postMarket).document(firstpath).collection
@@ -173,7 +239,26 @@ public class MarketplacePostActivity extends AppCompatActivity {
                     data.put(FirebaseID.title,mTitle.getText().toString());                 //제목
                     data.put(FirebaseID.price,mPrice.getText().toString());                 //가격
                     data.put(FirebaseID.contents,mContents.getText().toString());           //내용
-                    data.put(FirebaseID.img,stringurl);                                     //이미지url
+                    data.put("강의정보_강의명",adapterlecture);
+                    data.put("강의정보_교수명",adapterprofessor);
+                    data.put("강의정보_학과명",adapterdepartment);
+                    data.put("강의정보_년도",adapteryear);
+                    data.put("강의정보_학기",adaptermonth);
+                    data.put("책정보_책이름",b2);
+                    data.put("책정보_책가격",bprice.getText().toString());
+                    data.put("책정보_출판사",b3);
+                    data.put("책정보_이미지",b4);
+                    data.put("책정보_저자",b5);
+                    data.put("책정보_링크",b6);
+
+
+                    if(imglist.isEmpty()){                //이미지url
+                        imglist.add("null");
+                        data.put(FirebaseID.img, imglist);
+                    }
+                    else{
+                        data.put(FirebaseID.img, imglist);
+                    }
                     data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());           //타임
                     data.put(FirebaseID.nickname, Mydata.getMynickname());           //타임
                     data.put(FirebaseID.transaction, "false");           //거래완료 유무
@@ -187,30 +272,26 @@ public class MarketplacePostActivity extends AppCompatActivity {
             }
         });
 
-        Button barcoadbt = (Button) findViewById(R.id.market_post_barcode_button) ;
-        barcoadbt.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent3 = new Intent(MarketplacePostActivity.this, BarcoadActivity.class);
-                startActivity(intent3);
-            }
-        }) ;
-
-        /*Button searchpostbt = (Button) findViewById(R.id.post_searchbt) ;
-        searchpostbt.setOnClickListener(new Button.OnClickListener() {
+        ImageView searchpostbt = (ImageView) findViewById(R.id.searchpostbt) ;
+        searchpostbt.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDialogsearch();
             }
         }) ;
 
-        Button searchpostbt2 = (Button) findViewById(R.id.post_searchbt2) ;
-        searchpostbt2.setOnClickListener(new Button.OnClickListener() {
+        ImageView searchpostbt2 = (ImageView) findViewById(R.id.searchpostbt2) ;
+        searchpostbt2.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialogsearch2();
+                if(!searchposttv.getText().equals("학과")){
+                    showDialogsearch2();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "학과먼저 등록해주세요", Toast.LENGTH_LONG).show();
+                }
             }
-        }) ;*/
+        }) ;
 
     }
 
@@ -233,21 +314,117 @@ public class MarketplacePostActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {
 
         }
+
+
     };
 
+    TextWatcher watcher2 = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            if(!TextUtils.isEmpty(charSequence.toString()) && !charSequence.toString().equals(result)){
+                result = decimalFormat.format(Double.parseDouble(charSequence.toString().replaceAll(",","")));
+                bprice.setText(result);
+                bprice.setSelection(result.length());
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+
+
+    };
+
+    // 앨범에서 액티비티로 돌아온 후 실행되는 메서드
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode) {                      //갤러리에서 이미지 가져오기
-            case 10:
-                if (resultCode == RESULT_OK) {
-                    //선택한 이미지의 경로 얻어오기
-                    imgUri = data.getData();
-                    Glide.with(this).load(imgUri).into(imageView);
-                }
-                break;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+        String filename = sdf.format(new Date());//현재 시간과 사용자 고유id로 파일명 지정
+        String user = mAuth.getCurrentUser().getUid().toString();
+
+
+        if(data == null){   // 어떤 이미지도 선택하지 않은 경우
+            Toast.makeText(getApplicationContext(), "이미지를 선택하지 않았습니다.", Toast.LENGTH_LONG).show();
         }
+        else{   // 이미지를 하나라도 선택한 경우
+            if(data.getClipData() == null){     // 이미지를 하나만 선택한 경우
+                Log.e("single choice: ", String.valueOf(data.getData()));
+                Uri imageUri = data.getData();
+                uriList.add(imageUri);
+
+                adapter = new MultiImageAdapter(uriList, getApplicationContext());
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+                stringurl = "images/community/" + user + filename + ".png";
+                imglist.add(stringurl);
+            }
+            else{      // 이미지를 여러장 선택한 경우
+                ClipData clipData = data.getClipData();
+                Log.e("clipData", String.valueOf(clipData.getItemCount()));
+
+                if(clipData.getItemCount() > 10){   // 선택한 이미지가 11장 이상인 경우
+                    Toast.makeText(getApplicationContext(), "사진은 10장까지 선택 가능합니다.", Toast.LENGTH_LONG).show();
+                }
+                else{   // 선택한 이미지가 1장 이상 10장 이하인 경우
+                    Log.e(TAG, "multiple choice");
+
+                    for (int i = 0; i < clipData.getItemCount(); i++){
+                        Uri imageUri = clipData.getItemAt(i).getUri();  // 선택한 이미지들의 uri를 가져온다.
+                        try {
+                            uriList.add(imageUri);  //uri를 list에 담는다.
+                            stringurl = "images/community/" + user + filename + "_" + count + ".png";
+                            imglist.add(stringurl);
+                            count++;
+                        } catch (Exception e) {
+                            Log.e(TAG, "File select error", e);
+                        }
+                    }
+
+                    adapter = new MultiImageAdapter(uriList, getApplicationContext());
+                    recyclerView.setAdapter(adapter);   // 리사이클러뷰에 어댑터 세팅
+                    recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));     // 리사이클러뷰 수평 스크롤 적용
+
+                    adapter.setOnLongItemClickListener(new MultiImageAdapter.OnLongItemClickListener() {
+                        @Override
+                        public void onLongItemClick(int pos) {
+                            commentdeleteDialog(pos);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    void commentdeleteDialog(int pos){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MarketplacePostActivity.this)
+                .setTitle("이미지 삭제")
+                .setMessage("이미지를 삭제하시겠습니까?")
+                .setPositiveButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(MarketplacePostActivity.this, "취소하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("네", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        uriList.remove(pos);
+                        adapter.notifyItemRemoved(pos);
+                        imglist.remove(pos);
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public void showDialogsearch(){
@@ -258,7 +435,7 @@ public class MarketplacePostActivity extends AppCompatActivity {
 
         searchbt = dialogsearch.findViewById(R.id.list_seach);
         searchtv = dialogsearch.findViewById(R.id.tv_search);
-        //searchposttv = findViewById(R.id.post_searchtv);
+
 
         searchtv.setText("학과 검색");
 
@@ -270,7 +447,6 @@ public class MarketplacePostActivity extends AppCompatActivity {
         // AutoCompleteTextView 에 아답터를 연결한다.
         autoCompleteTextView.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line,  list ));
-
 
         searchbt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -328,6 +504,26 @@ public class MarketplacePostActivity extends AppCompatActivity {
         // 리스트를 생성한다.
         list2 = new ArrayList<String>();
 
+
+
+        //---------------스피너에 년도 등록하는 작업
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy");
+        String getyear = dateFormat1.format(date);                          //현재 날짜의 년도를 추출
+        int numInt = Integer.parseInt(getyear);                             //int를 string로 변환하는 작업
+        //Log.d("LOGTEST", "int num : " + numInt);
+        for (int i = numInt; i > 2010; i--) {                               //올해부터 2010년까지의 데이터를 넣기위한 작업
+            String numStr2 = String.valueOf(i);                             //string을 int로 변환하는 작업
+            spinnerArray.add(numStr2+"년");                                      //스피너에 년도를 넣는작업
+        }
+        ArrayAdapter<String> spadapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray);
+        spadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sItems1 = (Spinner) dialogsearch2.findViewById(R.id.spinner_year);
+        sItems1.setAdapter(spadapter);
+        sItems2 = (Spinner) dialogsearch2.findViewById(R.id.spinner_month);
+
+
         list_seach2 = dialogsearch2.findViewById(R.id.list_seach2);
         searchtv2 = dialogsearch2.findViewById(R.id.tv_search2);
         addtv2 = dialogsearch2.findViewById(R.id.list_add);
@@ -338,57 +534,26 @@ public class MarketplacePostActivity extends AppCompatActivity {
         test1_2 = dialogsearch2.findViewById(R.id.test1_2);
         test2_2 = dialogsearch2.findViewById(R.id.test2_2);
         addlesson = dialogsearch2.findViewById(R.id.addlesson);
+        dialog_search_tv = dialogsearch2.findViewById(R.id.dialog_search_tv);
 
-        searchtv2.setText(Mydata.getMydepartment() + " 수업 검색");
+        searchtv2.setText(searchposttv.getText().toString() + " 수업 검색");
 
         test1_1.setVisibility(View.GONE);
         test2_1.setVisibility(View.GONE);
         test1_2.setVisibility(View.GONE);
         test2_2.setVisibility(View.GONE);
         addlesson.setVisibility(View.GONE);
-
+        sItems1.setVisibility(View.GONE);
+        sItems2.setVisibility(View.GONE);
 
         radioGroup = dialogsearch2.findViewById(R.id.radioGroup);
         radioGroup.check(R.id.rg_btn1);
         settingList2("강의");
 
-        final AutoCompleteTextView autoCompleteTextView2 = (AutoCompleteTextView) dialogsearch2.findViewById(R.id.autoCompleteTextView2);
-        // AutoCompleteTextView 에 아답터를 연결한다.
-        autoCompleteTextView2.setAdapter(new ArrayAdapter<String>(MarketplacePostActivity.this, android.R.layout.simple_dropdown_item_1line, list2 ));
-
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.rg_btn1){
-                    list2.clear();
-                    settingList2("강의");                                      // 리스트에 검색될 데이터(단어)를 추가한다.
-                }
-                else if(checkedId == R.id.rg_btn2){
-                    list2.clear();
-                    settingList2("교수");
-                }
-                // AutoCompleteTextView 에 아답터를 연결한다.
-                autoCompleteTextView2.setAdapter(new ArrayAdapter<String>(MarketplacePostActivity.this, android.R.layout.simple_dropdown_item_1line, list2 ));
-            }
-        });
-
         list_seach2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String searchet = autoCompleteTextView2.getText().toString();
-                if(list2.contains(searchet)){
-                    Toast.makeText(MarketplacePostActivity.this,"리스트에 있습니다.",Toast.LENGTH_SHORT).show();
-                    String result = autoCompleteTextView2.getText().toString();
-                    String[] array = result.split(",");
-                    //setlesson.setText(result);
-                    setlesson.setText(array[0]);
-                    setprofessor.setText(array[1]);
-                    dialogsearch2.dismiss();
-                }
-                else{
-                    Toast.makeText(MarketplacePostActivity.this,"리스트에 없습니다.",Toast.LENGTH_SHORT).show();
-                }
-
+                searchdata(dialog_search_tv.getText().toString());
             }
         });
 
@@ -401,6 +566,8 @@ public class MarketplacePostActivity extends AppCompatActivity {
                     test1_2.setVisibility(View.VISIBLE);
                     test2_2.setVisibility(View.VISIBLE);
                     addlesson.setVisibility(View.VISIBLE);
+                    sItems1.setVisibility(View.VISIBLE);
+                    sItems2.setVisibility(View.VISIBLE);
                 }
                 else{
                     test1_2.setText(null);
@@ -410,6 +577,8 @@ public class MarketplacePostActivity extends AppCompatActivity {
                     test1_2.setVisibility(View.GONE);
                     test2_2.setVisibility(View.GONE);
                     addlesson.setVisibility(View.GONE);
+                    sItems1.setVisibility(View.GONE);
+                    sItems2.setVisibility(View.GONE);
                 }
 
             }
@@ -418,36 +587,13 @@ public class MarketplacePostActivity extends AppCompatActivity {
         addlesson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String lesson = test1_2.getText().toString();
-                String Professor = test2_2.getText().toString();
-
-                if(test1_2.getText().toString().equals("") || test2_2.getText().toString().equals("")){
-                    Toast.makeText(getApplicationContext(),"입력되지않았습니다.",Toast.LENGTH_SHORT).show();//토스메세지 출력
-                }
-                else{
-                    mDatabaseRef2.child(Mydata.getMyschool()).child(lesson).child("수업명").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String value = snapshot.getValue(String.class);
-
-                            if(value!=null){
-                                Toast.makeText(getApplicationContext(),"이미 존재하는 수업입니다.",Toast.LENGTH_SHORT).show();//토스메세지 출력
-                            }
-                            else{
-                                commentaddDialog();
-                                autoCompleteTextView2.setAdapter(new ArrayAdapter<String>(MarketplacePostActivity.this, android.R.layout.simple_dropdown_item_1line, list2 ));
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
+                if (mAuth.getCurrentUser() != null) {
+                   adddata(sItems1.getSelectedItem().toString(),sItems2.getSelectedItem().toString());
                 }
             }
         });
-    }
+}
+
 
     private void settingList2(String name){
         mDatabaseRef2.child(Mydata.getMyschool()).addValueEventListener(new ValueEventListener() {
@@ -490,33 +636,38 @@ public class MarketplacePostActivity extends AppCompatActivity {
         });
     }
 
-
-    void commentaddDialog(){
-        String lesson = test1_2.getText().toString();
-        String Professor = test2_2.getText().toString();
-
-        LessonAccount account = new LessonAccount();
-
-        account.set강의(lesson+","+Professor);
-        account.set교수(Professor+","+lesson);
-        account.set본분교명(Mydata.getMycampus());
-        account.set학과명(Mydata.getMydepartment());
+    void addDialog(String sItems11,String sItems22){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MarketplacePostActivity.this)
                 .setTitle("추가")
-                .setMessage("수업명 : " + lesson + "\n" + "교수명 : " + Professor + "\n이 맞습니까?")
+                .setMessage("강의명 : " + test1_2.getText().toString() + "\n" + "교수명 : " + test2_2.getText().toString() + "\n이 맞습니까?")
                 .setPositiveButton("아니오", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(getApplicationContext(),"취소하였습니다.",Toast.LENGTH_SHORT).show();//토스메세지 출력
 
                     }
                 })
                 .setNegativeButton("네", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mDatabaseRef2.child(Mydata.getMyschool()).child(lesson).setValue(account);
-                        Toast.makeText(getApplicationContext(),"수업이 추가되었습니다.",Toast.LENGTH_SHORT).show();//토스메세지 출력
+                        Log.d("LOGTEST", "yes");
+                        String postId = mStore.collection("Lecture").document(Mydata.getMyschool()).collection(searchposttv.getText().toString()).document().getId();
+                        Map<String, Object> data = new HashMap<>();                             // Lecture - 자신의 학교 - 선택한 학과명 으로 들어가는 구조
+                        data.put(FirebaseID.postId, postId.toString());                          //문서id
+                        data.put(FirebaseID.userId, mAuth.getCurrentUser().getUid());            //작성하는 유저의 id
+                        data.put("강의명", test1_2.getText().toString());                 //제목
+                        data.put("교수명", test2_2.getText().toString());                 //가격
+                        data.put("본분교명", Mydata.getMycampus());                       //가격
+                        data.put("학과명", searchposttv.getText().toString());            //가격
+                        data.put("년도", sItems11);           //타임
+                        data.put("학기", sItems22);           //타임
+                        data.put(FirebaseID.timestamp, FieldValue.serverTimestamp());           //타임
+
+                        mStore.collection("Lecture").document(Mydata.getMyschool()).collection(searchposttv.getText().toString()).document(postId).set(data, SetOptions.merge());
+
+                        Toast.makeText(getApplicationContext(),"데이터가 등록되었습니다.",Toast.LENGTH_SHORT).show();                   //토스메세지 출력
+                        dialogsearch2.dismiss();
+
 
                         test1_2.setText(null);
                         test2_2.setText(null);
@@ -525,20 +676,135 @@ public class MarketplacePostActivity extends AppCompatActivity {
                         test1_2.setVisibility(View.GONE);
                         test2_2.setVisibility(View.GONE);
                         addlesson.setVisibility(View.GONE);
+                        sItems1.setVisibility(View.GONE);
+                        sItems2.setVisibility(View.GONE);
                     }
                 });
-
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
-    public String clock(){
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-        String getTime = dateFormat.format(date);
+    String tf;
+    void adddata(String sItems11,String sItems22){
+        tf = "";
+        Log.d("LOGTEST", Mydata.getMyschool());
 
-        return getTime;
+        mStore.collection("Lecture").document(Mydata.getMyschool()).collection(searchposttv.getText().toString())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> shot = document.getData();
+                                String lecture = String.valueOf((shot.get("강의명")));
+                                String professor = String.valueOf((shot.get("교수명")));
+                                String campus = String.valueOf((shot.get("본분교명")));
+                                String department = String.valueOf((shot.get("학과명")));
+                                String year = String.valueOf((shot.get("년도")));
+                                String month = String.valueOf((shot.get("학기")));
+                                //Log.d("LOGTEST", "tf " + tf);
+                                if(!tf.equals("t")){
+                                    if(lecture.equals(test1_2.getText().toString()) && professor.equals(test2_2.getText().toString())                       //중복되는 데이터가 있는지 검사
+                                            && campus.equals(Mydata.getMycampus()) && department.equals(searchposttv.getText().toString())
+                                            && year.equals(sItems1) && month.equals(sItems2)) {
+                                        tf = "t";
+                                    }
+                                    else{
+                                        tf = "f";
+                                    }
+                                }
+                            }
+                            if(!tf.equals("t")){
+                                addDialog(sItems11,sItems22);
+                            }
+                            else{
+                                Toast.makeText(getApplicationContext(),"이미 등록되어있는 정보입니다.",Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
     }
 
+    void searchdata(String sc){
+        RadioButton rdoButton = dialogsearch2.findViewById( radioGroup.getCheckedRadioButtonId() );
+        String strPgmId = rdoButton.getText().toString().toUpperCase();
+        Log.d("LOGTEST", "라디오버튼" + strPgmId);
+        Log.d("LOGTEST", searchposttv.getText().toString());
+        Log.d("LOGTEST", Mydata.getMyschool());
+        mDatas = new ArrayList<>();
+
+        mStore.collection("Lecture").document(myschool).collection(searchposttv.getText().toString())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if(!mDatas.isEmpty()){
+                                mDatas.clear();
+                            }
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> shot = document.getData();
+                                String lecture = String.valueOf((shot.get("강의명")));
+                                String professor = String.valueOf((shot.get("교수명")));
+                                String campus = String.valueOf((shot.get("본분교명")));
+                                String department = String.valueOf((shot.get("학과명")));
+                                String year = String.valueOf((shot.get("년도")));
+                                String month = String.valueOf((shot.get("학기")));
+                                if(strPgmId.equals("강의명으로 검색")){
+
+                                    if(lecture.contains(sc)){
+                                        PostMarketplaceSearch data = new PostMarketplaceSearch(lecture, professor, campus, department, year, month);
+                                        mDatas.add(data);
+                                    }
+                                }
+                                else if(strPgmId.equals("교수명으로 검색")){
+                                    if(professor.contains(sc)){
+                                        PostMarketplaceSearch data = new PostMarketplaceSearch(lecture, professor, campus, department, year, month);
+                                        mDatas.add(data);
+                                    }
+                                }
+
+                            }
+                            Log.d("LOGTEST", mDatas.toString());
+                            mAdapter = new PostAdapterMarketplacesearch(mDatas);
+
+                            mAdapter.setOnItemClickListener(new PostAdapterMarketplacesearch.OnItemClickListener() {         //아이템뷰에서 아이템 하나를 누르면 커뮤니티2액티비티로 데이터를 전송하며 이동하는 이벤트
+                                @Override
+                                public void onItemClick(int pos) {
+                                    //Toast.makeText(getApplicationContext(), "onItemClick position : " + pos, Toast.LENGTH_SHORT).show();
+
+                                    PostMarketplaceSearch hm = mDatas.get(pos);
+                                    setlesson.setText(hm.getLecture());
+                                    adapterlecture = hm.getLecture();
+                                    setprofessor.setText(hm.getProfessor());
+                                    adapterprofessor = hm.getProfessor();
+                                    adapterdepartment = hm.getDepartment();
+                                    adapteryear = hm.getYear();
+                                    adaptermonth = hm.getMonth();
+
+                                    dialogsearch2.dismiss();
+                                    //Toast.makeText(getApplicationContext(), hm.getContents() + "," + hm.getTitle(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+
+
+
+
+                            mPostRecyclerView.setAdapter(mAdapter);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+
+                });
+    }
+
+    void mydata(){
+        myschool = Mydata.getMyschool();
+    }
 }

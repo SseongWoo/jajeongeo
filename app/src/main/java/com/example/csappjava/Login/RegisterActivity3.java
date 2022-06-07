@@ -48,7 +48,7 @@ public class RegisterActivity3 extends AppCompatActivity {
     private List<String> spinnerArray3 =  new ArrayList<String>();
     private List<String> spinnerArray4 =  new ArrayList<String>();
     ArrayAdapter<String> adapter2;
-    TextView schoolname;
+    TextView schoolname, nearschool, nearschoolkr;
     EditText nicket;
     Button completregisterbt;
     String sc0 = "",sc1 = "",sc2 = "",sc3 = "",sc4 = "";
@@ -63,6 +63,8 @@ public class RegisterActivity3 extends AppCompatActivity {
         setContentView(R.layout.activity_register3);
 
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
+        nearschool = findViewById(R.id.nearschool);
+        nearschoolkr = findViewById(R.id.nearschoolkr);
 
         Intent intent = getIntent();
         String school = intent.getStringExtra("school");
@@ -81,6 +83,29 @@ public class RegisterActivity3 extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
+        mDatabaseRef.child(school).child("근처학교").addValueEventListener(new ValueEventListener() {        //학교명 찾는 코드
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                nearschoolkr.setText(value);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
+        mDatabaseRef.child(school).child("nearschool").addValueEventListener(new ValueEventListener() {        //학교명 찾는 코드
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
+                nearschool.setText(value);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+
 
         mDatabaseRef.child(school).addValueEventListener(new ValueEventListener() {
             @Override
@@ -231,7 +256,6 @@ public class RegisterActivity3 extends AppCompatActivity {
             public void onClick(View view) {
 
                 String nickedit = nicket.getText().toString();
-                //Log.d("ENDLOG1", "department : " + department + "nick" + nickedit);
                 if(department != null && nicket.length() > 1){
                     String userdata = user.getUid().toString();
 
@@ -241,8 +265,9 @@ public class RegisterActivity3 extends AppCompatActivity {
                     userMap3.put(FirebaseID.schoolKR,school2);
                     userMap3.put(FirebaseID.campus,campus);
                     userMap3.put(FirebaseID.affiliation,affiliation);
+                    userMap3.put("nearschool",nearschool.getText());
+                    userMap3.put("nearschoolkr",nearschoolkr.getText());
                     Log.d("ENDLOG1", "affiliation" + affiliation);
-                    //Log.d("ENDLOG2", "user : " + user.getUid() + "usermap" + userMap3);
                     mStore.collection(FirebaseID.user).document(userdata).update(userMap3);
                     finish();
                     Intent intent = new Intent(RegisterActivity3.this, MainLoadingActivity.class);
@@ -255,8 +280,7 @@ public class RegisterActivity3 extends AppCompatActivity {
             }
         });
     }
-    void sp(String item){
-
+    void sp(String item){                                                                                           //조건에 맞는 데이터를 각각의 스피너에 넣는 작업
         if(item.equals(sc0)){
             adapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray);
         }
@@ -282,6 +306,5 @@ public class RegisterActivity3 extends AppCompatActivity {
     }
     void moveaffiliation(String a){
         affiliation = a;
-        //Log.d("ENDLOG1", "affiliation" + affiliation + " a : " + a);
     }
 }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.csappjava.Chatting.ChatActivity;
+import com.example.csappjava.Mydata;
 import com.example.csappjava.R;
 import com.example.csappjava.models.ChatNicknameModel;
 import com.google.firebase.database.DataSnapshot;
@@ -23,14 +24,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {                     //채팅방목록 어뎁터
     Context context;
     List<String> list;
     Activity activity;
     String userName,Nickname;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference reference;
-    String sch;
 
 
     public ChatAdapter(Context context, List<String> list, Activity activity, String userName,String Nickname) {
@@ -55,8 +55,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference();
         //sch = ((LoginActivity)LoginActivity.context2).nextem2;
-        sch = "kangwon";
-        reference.child("cs").child(sch).child("user").child(list.get(position)).addValueEventListener(new ValueEventListener() {
+        reference.child("cs").child(Mydata.getMyschool()).child("user").child(list.get(position)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ChatNicknameModel chat_test = snapshot.getValue(ChatNicknameModel.class);
@@ -68,8 +67,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
             }
         });
-
-        // holder.textView.setText(list.get(position).toString());
 
         holder.userID.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -27,13 +27,12 @@ import com.google.firebase.storage.StorageReference;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMarketplace.PostViewHolder> {
+public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMarketplace.PostViewHolder> {           //중고거래 어뎁터
 
     private List<PostMarketplace> datas;
 
-    FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");             //파이어베이스 스토리지 경로지정
+    FirebaseStorage storage = FirebaseStorage.getInstance("gs://csapp-a3fce.appspot.com/");
     StorageReference storageRef = storage.getReference();
-
 
     public PostAdapterMarketplace(List<PostMarketplace> datas) {
         this.datas = datas;
@@ -49,7 +48,6 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostMarketplace data = datas.get(position);
         holder.title.setText(data.getTitle());
-        holder.contents.setText(data.getContents());
         holder.time.setText(data.getTime());
 
         if(!data.getTransaction().equals("true")){
@@ -58,17 +56,23 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
         else{
             holder.price.setText("거래 완료");
             holder.title.setPaintFlags(holder.title.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.contents.setPaintFlags(holder.contents.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
+            //holder.contents.setPaintFlags(holder.contents.getPaintFlags()| Paint.STRIKE_THRU_TEXT_FLAG);
         }
+        String img = data.getImg();
+        String[] array;
 
-        storageRef.child(data.getImg()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        img = img.replace("[","");
+        img = img.replace("]","");
+        img = img.replaceAll(" ","");
+        array = img.split(",");
+
+        storageRef.child(array[0]).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 //이미지 로드 성공시
                 Glide.with(holder.imgView.getContext())
                         .load(uri)
                         .into(holder.imgView);
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -93,7 +97,6 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
         this.onItemClickListener = listener;
     }
 
-
     public interface OnLongItemClickListener {
         void onLongItemClick(int pos);
     }
@@ -107,7 +110,6 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
 
     class PostViewHolder extends RecyclerView.ViewHolder{
         private TextView title;
-        private TextView contents;
         private ImageView imgView;
         private TextView price, time;
 
@@ -115,10 +117,10 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
             super(itemView);
 
             title = itemView.findViewById(R.id.item_post_title);
-            contents = itemView.findViewById(R.id.item_post_contents);
             price = itemView.findViewById(R.id.market_price);
             imgView = itemView.findViewById(R.id.marketplace_image);
             time = itemView.findViewById(R.id.item_post_mtime);
+            imgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -127,10 +129,8 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
                     if (position != RecyclerView.NO_POSITION) {
                         if (onItemClickListener != null) {
                             onItemClickListener.onItemClick(position);
-
                         }
                     }
-
                 }
             });
 
@@ -147,9 +147,6 @@ public class PostAdapterMarketplace extends RecyclerView.Adapter<PostAdapterMark
                     return false;
                 }
             });
-
-
         }
-
     }
 }

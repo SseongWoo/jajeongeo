@@ -25,7 +25,6 @@ public class RegisterActivity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register2);
 
-
         mFirebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
 
@@ -69,7 +68,6 @@ public class RegisterActivity2 extends AppCompatActivity {
                     startActivity(intent2);
                     finish();
                 }
-
                 user.reload();
                 if (!user.isEmailVerified()) {
                     Toast.makeText(RegisterActivity2.this, "인증에 실패하였습니다.", Toast.LENGTH_SHORT).show();

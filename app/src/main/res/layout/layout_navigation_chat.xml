@@ -6,7 +6,7 @@
     android:id="@+id/toolbarchat"
     app:title="@string/app_name"
     app:titleTextColor="@color/black"
-    android:background="@color/서브색"
+    android:background="@color/채팅색"
     app:navigationIcon="@drawable/ic_navmenu">
 
 </androidx.appcompat.widget.Toolbar>

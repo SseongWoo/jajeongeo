@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,9 +46,11 @@ public class SettingMain extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference reference = FirebaseDatabase.getInstance().getReference("cs");
     private FirebaseStorage firebaseStorage= FirebaseStorage.getInstance();
-    private TextView myset,modset;
+    private TextView myset,modset,nicknametv,schooltv;
     private String sch;
     private String myEmail;
+    ImageView profile;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +73,20 @@ public class SettingMain extends AppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.navigationView);
         navigationView.setItemIconTintList(null);
+        String mynickname = Mydata.getMynickname();
+        String myschool = Mydata.getMyschoolkr();
+        View headerView = navigationView.getHeaderView(0);              //네비게이션 헤더 호출
+        nicknametv = headerView.findViewById(R.id.nicknametv);              //네비게이션 헤더에 있는 아이템들 호출
+        schooltv = headerView.findViewById(R.id.schooltv);
+        profile = headerView.findViewById(R.id.profile);
+
+        nicknametv.setText(mynickname);                                     //아이템 택스트 바꾸기
+        schooltv.setText(myschool);
+        Glide.with(getApplicationContext())
+                .load(Mydata.getMyprofile())
+                .error(R.drawable.ic_noimage)
+                .into(profile);
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {    //네비게이션 메뉴 누를때 발생하는 이벤트
             @Override
@@ -109,7 +126,6 @@ public class SettingMain extends AppCompatActivity {
 
                     case R.id.nav_settings:
                         Toast.makeText(SettingMain.this, "이미 설정창 입니다.", Toast.LENGTH_LONG).show();
-                        finish();
                         break;
                 }
                 return true;

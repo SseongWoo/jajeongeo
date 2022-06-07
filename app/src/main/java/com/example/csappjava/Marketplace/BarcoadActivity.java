@@ -39,15 +39,12 @@ public class BarcoadActivity extends AppCompatActivity {
                 intent.putExtra("result", result.toString());
                 startActivity(intent);
             }
-
             @Override
             public void possibleResultPoints(List<ResultPoint> resultPoints) {
 
             }
         });
-
     }
-
     @Override
     protected void onResume() {
         super.onResume();

@@ -104,9 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
                 // 회원가입 시작
                 mStore =  FirebaseFirestore.getInstance();
                 String strEmail =mEtEmail.getText().toString() + "@" + mEtmail2.getText().toString() + ".ac.kr";
-                // String strEmail =mEtEmail.getText().toString() + "@" + mEtmail2.getText().toString() + ".com";
                 String strPwd = mEtpwd.getText().toString();
-                //String strnick = mnickname.getText().toString();
                 String strurl = "null";                          //포인트, 이미지경로
                 String school = mEtmail2.getText().toString();
                 String point = "0";
@@ -130,17 +128,16 @@ public class RegisterActivity extends AppCompatActivity {
                                 FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
 
                                 UserAccount account = new UserAccount();
-                                account .setIdToken(firebaseUser.getUid());
-                                account .setEmailID(firebaseUser.getEmail());
-                                account .setNickNames("테스트계정");
-                                account .setPassword(strPwd);
+                                account.setIdToken(firebaseUser.getUid());
+                                account.setEmailID(firebaseUser.getEmail());
+                                account.setNickNames("테스트계정");
+                                account.setPassword(strPwd);
                                 account.setprofile("null");
 
                                 Map<String,Object> userMapR = new HashMap<>();
                                 userMapR.put(FirebaseID.userId, firebaseUser.getUid());
                                 userMapR.put(FirebaseID.email, firebaseUser.getEmail());
                                 userMapR.put(FirebaseID.school, school);
-                                //userMapR.put(FirebaseID.password,strPwd);
                                 userMapR.put(FirebaseID.nickname,"");
                                 userMapR.put(FirebaseID.department,"");
                                 userMapR.put(FirebaseID.campus,"");
@@ -156,7 +153,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(RegisterActivity.this,RegisterActivity2.class);
+                                Intent intent = new Intent(RegisterActivity.this,RegisterActivity3.class);
                                 intent.putExtra("school",school);
                                 startActivity(intent);
                             }

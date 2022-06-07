@@ -21,6 +21,10 @@
             <item
                 android:id="@+id/option_maketplace2"
                 android:title="기타 중고장터" />
+
+            <item
+                android:id="@+id/option_maketplace3"
+                android:title="내가 올린 게시물" />
         </menu>
     </item>
 </menu>
