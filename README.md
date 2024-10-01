@@ -19,4 +19,5 @@
 |https://github.com/SseongWoo|https://github.com/YeongBee|
 
 ## 발표 자료
+[최종발표.pptx](https://github.com/user-attachments/files/17200845/default.pptx)
 
