@@ -72,6 +72,57 @@
 
 ---
 
+## 디렉토리 구조
+```sh
+ ├── Login (회원 관리)
+ ├── Marketplace (중고 서적 거래)
+ ├── Community (학교 & 학과 커뮤니티)
+ ├── Chatting (실시간 채팅 기능)
+ ├── Setting (설정 관련 기능)
+ ├── models (데이터 모델 클래스)
+ ├── adapters (RecyclerView & ListView 어댑터)
+ ├── image (이미지 관련 기능)
+```
+
+## 화면 구성
+<details><summary>로그인</summary>
+    
+|로그인|비밀번호 찾기|
+|:---:|:---:|
+|<img src = "https://github.com/user-attachments/assets/18cf2e1f-56b5-42eb-99cf-213c7a9d9c5f" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/a714f758-7836-488a-82ce-b708e4076cf4" width="350" height="750">|
+|회원가입 1단계|회원가입 2단계|
+|<img src = "https://github.com/user-attachments/assets/fd48d9e1-3f78-4c9a-944e-9609873a78db" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/4bcc191e-2ed9-4668-931f-7e7d8699a861" width="350" height="750">|
+</details>
+
+<details><summary>커뮤니티</summary>
+    
+|메인|카테고리|검색|
+|:---:|:---:|:---:|
+|<img src = "https://github.com/user-attachments/assets/3f8feb89-629c-41ed-8a4c-646b9f56e4c5" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/f81c46d7-ecef-4107-8b7f-7728a34acb61" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/27ec7d51-3758-4226-a401-22424003cc65" width="350" height="750">|
+|게시글|게시글신고|게시글작성|
+|<img src = "https://github.com/user-attachments/assets/a2e15fec-82a6-420c-9b4f-837a4f9a7c6a" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/81cbcbcb-c9df-4755-afdd-b2dca2271841" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/f81c46d7-ecef-4107-8b7f-7728a34acb61" width="350" height="750">|
+</details>
+
+<details><summary>중고장터</summary>
+    
+|메인|카테고리|게시글2|
+|:---:|:---:|:---:|
+|<img src = "https://github.com/user-attachments/assets/233ac515-f583-417a-bde2-0ab366ef85e0" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/456f4e12-817c-4eaf-988c-f4c2d77d5912" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/bd76fc66-d77f-4095-a1e6-5a3ed3d6840c" width="350" height="750">|
+|게시글1|게시글2|게시글작성_바코드인식|
+|<img src = "https://github.com/user-attachments/assets/9a3c3899-dfcd-4da4-a919-a4984bd0a839" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/e35c0c3b-5d1b-46eb-82e1-23a277e8de2d" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/74e414b6-b0c4-4ca5-a765-d1bb9879b477" width="350" height="750">|
+|게시글작성|게시글작성_과목검색|게시글작성_학과검색|
+<img src = "https://github.com/user-attachments/assets/ee49e223-e038-4045-a35f-913e9856b2fc" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/9ecd5c05-c509-4a07-a93e-a2f71cc5f840" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/2caaa33e-729c-41b3-b492-c9425f434f95" width="350" height="750">|
+</details>
+
+<details><summary>채팅</summary>
+    
+|목록|메인|
+|:---:|:---:|
+|<img src = "https://github.com/user-attachments/assets/dc794a4c-4004-4d39-85df-3e878451f00d" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/982acd29-df4d-4208-ae9d-7ad9f66bf3f4" width="350" height="750">|
+|기능|지도|
+|<img src = "https://github.com/user-attachments/assets/c6a93138-a243-4305-a5b8-5928dea025f4" width="350" height="750">|<img src = "https://github.com/user-attachments/assets/8d1b94d0-50fe-485e-97b9-38c4a082fb70" width="350" height="750">|
+</details>
+
 ## 발표 자료
 [최종발표.pptx](https://github.com/user-attachments/files/17200845/default.pptx)
 
