@@ -84,6 +84,14 @@
  ├── image (이미지 관련 기능)
 ```
 
+## 학과 데이터 구조
+
+### 기존 학과 데이터
+<img src = "https://github.com/user-attachments/assets/bcea8793-8f21-4691-ac14-7d7857df1552" width="750" height="350">
+
+### JSON 변환 학과 데이터
+<img src = "https://github.com/user-attachments/assets/8d367394-c4d9-4418-84f5-0bdee5a972fe" width="350" height="350">
+
 ## 화면 구성
 <details><summary>로그인</summary>
     
